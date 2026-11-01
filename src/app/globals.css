@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens. Neutral zinc base, one iris accent, Radix-style signal colors. */
+:root {
+  --background: #ffffff;
+  --foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --subtle: #fafafa;
+  --border: #e4e4e7;
+  --ring: #5b5bd6;
+  --accent: #5b5bd6;
+  --accent-soft: #eef0ff;
+  --error: #dc3e42;
+  --error-soft: #fff0f0;
+  --warning: #cc7a00;
+  --warning-soft: #fff7e6;
+  --tip: #0d74ce;
+  --tip-soft: #edf6ff;
+  --ok: #218358;
+  --ok-soft: #e9f9ee;
+  --editor: #ffffff;
+  color-scheme: light;
+}
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --subtle: #0f0f12;
+  --border: #27272a;
+  --ring: #8d8dff;
+  --accent: #8d8dff;
+  --accent-soft: #1d1d3a;
+  --error: #ff6369;
+  --error-soft: #2a1314;
+  --warning: #ffc53d;
+  --warning-soft: #2a1f0a;
+  --tip: #70b8ff;
+  --tip-soft: #0f1d2e;
+  --ok: #3dd68c;
+  --ok-soft: #0d2418;
+  --editor: #0c0c0f;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-tip: var(--tip);
+  --color-tip-soft: var(--tip-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-editor: var(--editor);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: color-mix(in oklab, var(--accent) 25%, transparent); }
+}
+
+/* Faint grid behind the hero: graph paper for a linter, fades out downward. */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* CodeMirror chrome */
+.cm-editor { height: 100%; background: var(--editor); color: var(--foreground); font-size: 13px; }
+.cm-editor.cm-focused { outline: none; }
+.cm-scroller { font-family: var(--font-geist-mono), ui-monospace, Menlo, monospace; line-height: 1.65; }
+.cm-gutters { background: var(--editor) !important; border-right: 1px solid var(--border) !important; color: color-mix(in oklab, var(--muted-foreground) 70%, transparent) !important; }
+.cm-activeLine { background: color-mix(in oklab, var(--accent) 6%, transparent) !important; }
+.cm-activeLineGutter { background: transparent !important; color: var(--foreground) !important; }
+.cm-content { caret-color: var(--accent); padding: 12px 0; }
+.cm-cursor { border-left-color: var(--accent) !important; }
+.cm-selectionBackground, .cm-focused .cm-selectionBackground { background: color-mix(in oklab, var(--accent) 22%, transparent) !important; }
+.cm-line { padding: 0 16px 0 8px; }
+.cm-lineNumbers .cm-gutterElement { padding: 0 10px 0 14px; min-width: 40px; }
+.cm-lint-marker { width: 0.8em; height: 0.8em; }
+.cm-lintRange-error { background-image: none; text-decoration: underline wavy var(--error); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.cm-lintRange-warning { background-image: none; text-decoration: underline wavy var(--warning); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.cm-lintRange-info { background-image: none; text-decoration: underline dotted var(--tip); text-underline-offset: 3px; }
+.cm-tooltip { background: var(--background) !important; border: 1px solid var(--border) !important; border-radius: 8px; box-shadow: 0 8px 24px -8px rgb(0 0 0 / .25); overflow: hidden; }
+.cm-diagnostic { font-family: var(--font-sans); font-size: 12.5px; padding: 6px 10px; border-left-width: 3px; }
+.cm-diagnostic-error { border-left-color: var(--error); }
+.cm-diagnostic-warning { border-left-color: var(--warning); }
+.cm-diagnostic-info { border-left-color: var(--tip); }
+.cm-flash-line { animation: flash 1.2s ease-out; }
+@keyframes flash { from { background: color-mix(in oklab, var(--accent) 30%, transparent); } to { background: transparent; } }
+
+/* FAQ disclosure */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] .chev { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Long-form article typography (learn pages) */
+.prose-article h2 { margin-top: 3rem; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; scroll-margin-top: 5rem; }
+.prose-article h3 { margin-top: 2rem; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.prose-article p, .prose-article li { font-size: 16px; line-height: 1.75; color: var(--muted-foreground); }
+.prose-article p { margin-top: 1rem; }
+.prose-article ul { margin-top: 1rem; list-style: disc; padding-left: 1.25rem; }
+.prose-article li + li { margin-top: 0.35rem; }
+.prose-article strong { color: var(--foreground); font-weight: 600; }
+.prose-article a { color: var(--foreground); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; }
+.prose-article a:hover { text-decoration-color: var(--foreground); }
+.prose-article :not(pre) > code { border-radius: 4px; background: var(--muted); padding: 0.1em 0.35em; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.86em; color: var(--foreground); }

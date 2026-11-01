@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.env*
+!.env.example
+# Intentional bad fixture (placeholder token) required by tests/validator.test.ts
+!fixtures/bad/leaky-secrets/.env
+screenshots/
+playwright-report/
+test-results/
