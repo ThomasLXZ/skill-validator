@@ -3,12 +3,12 @@ import { ContentSection, Faq, faqJsonLd, Sources, ToolPage } from "@/components/
 import { LIMITS, REF } from "@/lib/tool-result-size";
 import { pageMeta, SITE } from "@/lib/site";
 
-const TITLE = "MCP Tool Result Size Checker: Tokens vs Claude Code Limits";
-const DESC = "Paste an MCP tool result or any tool output to estimate characters, bytes and tokens, compare against Claude Code's 10k warning and 25k default limit, and get tips to shrink it.";
+const TITLE = "MCP Token Counter and Tool Result Size Checker";
+const DESC = "MCP token counter for tool results. Paste an MCP tool result or any text to estimate tokens, characters, and bytes, then compare with Claude Code's 10k warning and 25k default limit.";
 
 export const metadata = pageMeta({
   title: TITLE, description: DESC, path: "/tool-result-size/",
-  keywords: ["MCP tool output too large", "MAX_MCP_OUTPUT_TOKENS", "tool result token limit", "Claude Code MCP output", "maxResultSizeChars", "token counter"],
+  keywords: ["mcp token counter", "MCP token counter", "MCP tool output too large", "MAX_MCP_OUTPUT_TOKENS", "tool result token limit", "Claude Code MCP output", "maxResultSizeChars", "token counter"],
 });
 
 const n = (x: number) => x.toLocaleString("en-US");
@@ -26,18 +26,19 @@ const FAQ = [
   { q: "What is Claude Code's MCP output limit?", a: `Claude Code warns when an MCP tool result passes ${n(LIMITS.warnTokens)} tokens and by default caps it at ${n(LIMITS.defaultMaxTokens)} tokens. You can change the cap with the MAX_MCP_OUTPUT_TOKENS environment variable.` },
   { q: "How accurate is the token estimate?", a: "It is a heuristic: about 4 characters per token for English, 3 for JSON or code, and 1 per CJK character. Use Anthropic's token counting API for an exact count with a specific model." },
   { q: "Do other MCP clients use the same limits?", a: "No. The MCP specification does not set a size limit. Each client decides, so keep results small whichever client you target." },
+  { q: "Can I use this as an MCP token counter?", a: "Yes. Paste a tool result, a tool description, or any other text. The count is an estimate: about 4 characters per token for English, 3 for JSON or code, and 1 per CJK character. It is not the model's tokenizer. For an exact count on a Claude model, use Anthropic's token counting API." },
 ];
 
 export default function Page() {
   return (
     <ToolPage
-      eyebrow="For MCP server and agent tool authors"
-      title="Is your tool result too big?"
-      lead={<>Paste what your tool returns. See its size in characters, bytes and estimated tokens, how it compares with Claude Code&apos;s documented MCP limits, and what to cut.</>}
-      bullets={["MCP CallToolResult aware", `${n(LIMITS.warnTokens)} / ${n(LIMITS.defaultMaxTokens)} token limits`, "JSON bloat finder"]}
+      eyebrow="MCP token counter"
+      title="How many tokens is this tool result?"
+      lead={<>An MCP token counter for what your tool returns. See characters, bytes, and estimated tokens, how that compares with Claude Code&apos;s documented limits, and what to cut. Check the tool list itself on the <a className="underline decoration-border underline-offset-4 hover:decoration-foreground" href="/mcp/">MCP test suite</a>.</>}
+      bullets={["MCP CallToolResult aware", `${n(LIMITS.warnTokens)} / ${n(LIMITS.defaultMaxTokens)} token limits`, "Works on any pasted text"]}
       tool={<ToolResultSizeTool />}
       jsonLd={{ "@context": "https://schema.org", "@graph": [
-        { "@type": "WebApplication", name: "Tool Result Size Checker", url: `${SITE}/tool-result-size/`, applicationCategory: "DeveloperApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } },
+        { "@type": "WebApplication", name: "MCP Token Counter", url: `${SITE}/tool-result-size/`, applicationCategory: "DeveloperApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, description: DESC },
         faqJsonLd(FAQ),
       ] }}
     >

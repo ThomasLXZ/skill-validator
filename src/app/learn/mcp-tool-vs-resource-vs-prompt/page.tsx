@@ -140,6 +140,14 @@ export default function Page() {
           <Faq items={FAQ} />
 
           <div className="mt-10 rounded-2xl border p-5 text-[14px]">
+            <div className="font-medium">On this site</div>
+            <ul className="mt-2 space-y-1.5">
+              <li><Link className="underline decoration-border underline-offset-4 hover:decoration-foreground" href="/mcp/">MCP server test suite</Link> — inspect tools/list, generate curl, write a config.</li>
+              <li><Link className="underline decoration-border underline-offset-4 hover:decoration-foreground" href="/learn/mcp-server-shi-shenme/">MCP Server 是什么</Link> — short intro in Chinese.</li>
+              <li><Link className="underline decoration-border underline-offset-4 hover:decoration-foreground" href="/tool-result-size/">MCP token counter</Link> — size a tool result before it hits a client limit.</li>
+            </ul>
+          </div>
+          <div className="mt-4 rounded-2xl border p-5 text-[14px]">
             <div className="font-medium">Spec references (2026-07-28)</div>
             <ul className="mt-2 space-y-1.5">
               {[["Server features overview", L.server], ["Tools", L.tools], ["Resources", L.resources], ["Prompts", L.prompts]].map(([t, h]) => (

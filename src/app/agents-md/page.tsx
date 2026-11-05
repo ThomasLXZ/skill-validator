@@ -4,17 +4,17 @@ import { ContentSection, Faq, faqJsonLd, Sources, ToolPage } from "@/components/
 import { CODEX_DEFAULT_MAX_BYTES, REF, RECOMMENDED_SECTIONS } from "@/lib/agents-md";
 import { pageMeta, SITE } from "@/lib/site";
 
-const TITLE = "AGENTS.md Validator & Generator";
+const TITLE = "AGENTS.md Validator — Check and Generate agents.md";
 const DESC =
-  "Check and generate AGENTS.md — the open Markdown format for AI coding agents (Codex, Cursor, Copilot, and more). Convention checks for sections, size, and hygiene. No required schema.";
+  "Free agents.md validator and generator. Check an AGENTS.md file for the sections, size, and hygiene that agents.md tools and Codex expect. Plain Markdown, no required schema. Runs in your browser.";
 
 export const metadata = pageMeta({
   title: TITLE,
   description: DESC,
   path: "/agents-md/",
   keywords: [
-    "AGENTS.md", "agents md validator", "agents md checker", "agents.md generator",
-    "codex agents.md", "cursor agents.md", "ai coding agents instructions",
+    "agents.md validator", "agents.md tools", "AGENTS.md validator", "AGENTS.md generator",
+    "agents md checker", "codex agents.md", "cursor agents.md", "ai coding agents instructions",
   ],
 });
 
@@ -39,18 +39,22 @@ const FAQ = [
     q: "What if instructions conflict?",
     a: "Per agents.md: the closest AGENTS.md to the edited file wins, and explicit user chat prompts override everything.",
   },
+  {
+    q: "Is this an agents.md validator?",
+    a: "Yes. Paste AGENTS.md or AGENTS.override.md and it checks the headings people expect, the Codex 32 KiB combined-docs cap, and a few hygiene tips. It is one of the agents.md tools on this site, together with a generator that fills those sections. The format has no required fields, so nothing here is a schema error.",
+  },
 ];
 
 export default function Page() {
   return (
     <ToolPage
-      eyebrow="Open agent instructions format"
-      title="Validate and generate AGENTS.md"
+      eyebrow="agents.md tools"
+      title="AGENTS.md validator"
       lead={
         <>
-          Paste an <code className="font-mono text-[0.9em]">AGENTS.md</code> to check common quality signals from{" "}
+          An agents.md validator for the open instruction file used by Codex, Cursor, and Copilot. Paste <code className="font-mono text-[0.9em]">AGENTS.md</code> to check sections, size, and hygiene against{" "}
           <a className="underline decoration-border underline-offset-4 hover:decoration-foreground" href={REF.site} target="_blank" rel="noopener noreferrer">agents.md</a>
-          {" "}and OpenAI Codex docs — or fill in a form and download a starter file. Plain Markdown; no required schema.
+          {" "}and the Codex docs — or generate a starter. Plain Markdown; no required schema.
         </>
       }
       bullets={["Convention checks (not a schema)", "Codex 32 KiB size tip", "Generator with Check-it"]}
