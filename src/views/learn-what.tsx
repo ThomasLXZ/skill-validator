@@ -34,9 +34,9 @@ const copy = {
     pInside: "The difference is who decides to use them, not what the file looks like.",
     hConfig: "What the config looks like",
     pConfig1: "A local server needs a command and arguments. A remote server needs an http or https URL. Claude Desktop and Cursor put them under mcpServers. VS Code puts them under servers and sets type. Keep secrets in environment variables, not in a file you commit.",
-    pConfig2before: "The",
-    pConfig2mid: "can generate those three configs, check an existing JSON file, or write curl for an HTTP server. When a tool returns too much, the",
-    pConfig2after: "shows whether it will hit a client limit.",
+    pConfig2before: "The ",
+    pConfig2mid: " can generate those three configs, check an existing JSON file, or write curl for an HTTP server. When a tool returns too much, the ",
+    pConfig2after: " shows whether it will hit a client limit.",
     faqTitle: "FAQ",
     next: "Read next",
     links: [
@@ -53,30 +53,30 @@ const copy = {
   },
   zh: {
     title: "MCP Server 是什么？用一次握手讲清楚",
-    description: "MCP Server 是什么：一个按 Model Context Protocol 向 AI 客户端提供工具、资源和提示的程序。说明它和模型的区别、stdio 与 HTTP 两种接法，以及怎么在本地检查。",
+    description: "MCP server 是一个程序，按 Model Context Protocol 向 AI 客户端提供工具、资源和提示。这篇说明它和模型的差别、stdio 与 HTTP 两种接法，以及怎样在本地检查。",
     keywords: ["mcp server 是什么", "什么是 MCP server", "MCP 服务器", "Model Context Protocol"],
     kicker: "学习",
     sibling: "工具、资源与提示",
     h1: "MCP Server 是什么",
-    lead: "MCP server 是一个小服务。它按 Model Context Protocol 把工具、资源和提示交给 AI 客户端。客户端里的模型决定要不要调用；server 负责真的去做。",
+    lead: "MCP server 是一个小的程序。它按 Model Context Protocol，把工具、资源和提示交给 AI 客户端。要不要调用，由客户端里的模型决定；真正执行的是这个 server。",
     hProblem: "它解决的问题",
-    pProblem1: "模型本身连不上你的仓库、数据库或内部 API。以前每家产品都写一套自己的插件格式。MCP 把这件事收成一种 JSON-RPC：客户端问「你有哪些工具」，server 回答一份列表；客户端说「调用这个，参数是这些」，server 返回结果。",
-    pProblem2: "所以「MCP server 是什么」的短答案是：一个实现了这套协议的程序。它不是聊天窗口，也不是模型权重。",
+    pProblem1: "模型自己到不了你的仓库、数据库或内部 API。过去各家产品各自定义一套插件格式。MCP 改用同一种 JSON-RPC 对话来做这件事：客户端问「你有哪些工具」，server 回一份列表；客户端再说「用这些参数调用这个」，server 返回结果。",
+    pProblem2: "所以「MCP server 是什么」可以先记成一句：它是按这套协议通信的程序。它不是聊天窗口，也不是模型权重。",
     hShake: "一次正常的握手",
-    pShake1: "HTTP 上的顺序是固定的。客户端先 initialize，带上自己支持的协议版本。服务器在响应头里可能给一个 mcp-session-id。客户端接着发 notifications/initialized，这是通知，没有 id。然后才是 tools/list，以及真正的 tools/call。",
-    pShake2: "stdio 没有网址，顺序一样，只是消息走标准输入输出。桌面上的 Claude 或 Cursor 会替你启动命令。",
+    pShake1: "走 HTTP 时，顺序是固定的。客户端先发 initialize，带上自己支持的协议版本。服务器可能在响应头里返回 mcp-session-id。客户端接着发 notifications/initialized。这是一条通知，没有 id。这之后才是 tools/list，以及真正的 tools/call。",
+    pShake2: "stdio 没有网址。顺序和 HTTP 相同，只是消息走标准输入和标准输出。桌面版的 Claude 或 Cursor 会替你启动这条命令。",
     hInside: "里面通常有什么",
     inside: [
-      "Tool：模型可以调用的函数，带名字、描述和 inputSchema。",
-      "Resource：有地址的数据，由客户端决定要不要塞进上下文。",
-      "Prompt：用户主动点的模板，常见是斜杠命令。",
+      "Tool：模型可以调用的函数，带有名字、描述和 inputSchema。",
+      "Resource：带地址的数据。放不放进上下文，由客户端决定。",
+      "Prompt：用户主动点开的模板，常见形式是斜杠命令。",
     ],
-    pInside: "三者的差别是「谁决定使用」，不是文件长什么样。",
+    pInside: "三者的差别是谁决定使用，不是文件长什么样。",
     hConfig: "配置长什么样",
-    pConfig1: "本地 server 需要一条命令和参数。远程 server 需要一个 http 或 https 地址。Claude Desktop 和 Cursor 把它们写在 mcpServers 里；VS Code 写在 servers 里，并带上 type。密钥放在环境变量，不要写进会提交的文件。",
-    pConfig2before: "可以用",
-    pConfig2mid: "生成这三份配置、检查一份已有的 JSON，或给 HTTP server 生成 curl。工具返回太大时，用",
-    pConfig2after: "看它会不会顶到客户端的上限。",
+    pConfig1: "本地 server 要写一条命令和参数。远程 server 要写一个 http 或 https 地址。Claude Desktop 和 Cursor 把它们放在 mcpServers 里；VS Code 放在 servers 里，并写上 type。密钥放在环境变量里，不要写进会被提交的文件。",
+    pConfig2before: "要生成这三份配置、检查已有的 JSON，或给 HTTP server 写出 curl，用 ",
+    pConfig2mid: "。工具返回太多时，用 ",
+    pConfig2after: "看会不会超过客户端上限。",
     faqTitle: "常见问题",
     next: "接着可以看",
     links: [
@@ -85,10 +85,10 @@ const copy = {
       ["/tool-result-size/", "MCP token 计数"],
     ],
     faq: [
-      { q: "MCP Server 是模型吗？", a: "不是。模型负责生成文字。MCP server 是旁边的一个程序，负责列出工具、执行调用、提供资源或提示。Claude、Cursor 这类客户端先连接 server，再决定要不要用里面的工具。" },
-      { q: "它和 Claude Skill 有什么区别？", a: "Skill 是一份 SKILL.md 说明，告诉模型何时启用一套步骤。MCP server 是活的程序，能查数据库、调 API、读文件。两者可以同时存在：Skill 写流程，server 提供真正能调用的工具。" },
-      { q: "本地命令和网址，用哪个？", a: "跑在你自己机器上的 server 通常用 stdio：客户端启动一条命令，通过标准输入输出收发 JSON-RPC。装在别处的 server 用 Streamable HTTP：对一个 URL 发 POST。旧的 SSE 地址还能见到，新的 server 应优先 HTTP。" },
-      { q: "怎样确认 server 是通的？", a: "先 initialize，再发 notifications/initialized，然后 tools/list。本站的 MCP 测试页可以检查你粘贴的工具列表，并生成这几条 curl，但不会替你访问服务器。" },
+      { q: "MCP server 就是模型吗？", a: "不是。模型负责生成文字。MCP server 是旁边的一个程序，负责列出工具、执行调用，并提供资源或提示。Claude、Cursor 这类客户端先连上 server，再决定要不要用里面的工具。" },
+      { q: "它和 Claude Skill 有什么区别？", a: "Skill 是一份 SKILL.md，告诉模型何时按一套步骤来做。MCP server 是正在运行的程序，可以查数据库、调 API 或读文件。两者可以一起用：Skill 写流程，server 提供真正能调用的工具。" },
+      { q: "用本地命令，还是用网址？", a: "跑在你自己机器上的 server，通常用 stdio：客户端启动一条命令，通过标准输入和标准输出收发 JSON-RPC。放在别的机器上的 server，用 Streamable HTTP，对一个 URL 发 POST。旧的 SSE 地址还能见到；新的 server 应优先用 HTTP。" },
+      { q: "怎样确认 server 已经起来？", a: "按顺序发三步：initialize，然后 notifications/initialized，然后 tools/list。本站的 MCP 测试页可以检查你粘贴的工具列表，并生成这几条 curl。它不会替你去访问服务器。" },
     ],
   },
 } as const;
@@ -131,7 +131,7 @@ export function WhatMcpPage({ locale }: { locale: Locale }) {
             <h2>{c.hConfig}</h2>
             <p>{c.pConfig1}</p>
             <p>
-              {c.pConfig2before} <Link href={localePath(locale, "/mcp/")}>{locale === "zh" ? "MCP 测试页" : "MCP test page"}</Link> {c.pConfig2mid} <Link href={localePath(locale, "/tool-result-size/")}>{locale === "zh" ? "token 计数" : "token counter"}</Link> {c.pConfig2after}
+              {c.pConfig2before}<Link href={localePath(locale, "/mcp/")}>{locale === "zh" ? "MCP 测试页" : "MCP test page"}</Link>{c.pConfig2mid}<Link href={localePath(locale, "/tool-result-size/")}>{locale === "zh" ? "token 计数" : "token counter"}</Link>{c.pConfig2after}
             </p>
           </div>
           <h2 className="mb-2 mt-12 text-[24px] font-semibold tracking-[-0.02em]">{c.faqTitle}</h2>

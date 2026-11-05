@@ -43,34 +43,34 @@ const copy = {
   },
   zh: {
     title: "JSON Schema 校验：Draft-07、枚举与 OpenAI 结构化输出",
-    description: "在线校验 JSON Schema，包括 draft-07 和 enum，再拿一份 JSON 实例试跑。结构化输出演练场会标出 OpenAI 严格模式会拒绝的 schema。",
+    description: "在线校验 JSON Schema。先看 draft-07 和 enum，再用一份 JSON 实例试跑。结构化输出演练场会标出 OpenAI 严格模式会拒绝的 schema。",
     keywords: ["在线校验 JSON Schema", "json schema draft 7", "json schema enum", "openai 结构化输出", "structured output playground"],
     eyebrow: "JSON Schema 与结构化输出",
     h1: "在线校验 JSON Schema",
-    bullets: ["默认按 Draft-07", "检查 enum 和 $ref", "OpenAI 严格子集"],
+    bullets: ["默认按 Draft-07", "检查 enum 和 $ref", "OpenAI 的严格子集"],
     appName: "JSON Schema 校验器",
     strictTitle: "严格模式额外要求什么",
-    strictIntro: "一份 schema 可以是合法的 draft-07，仍然通不过 Structured Outputs。第三个标签按 OpenAI 指南里的约束来查。",
+    strictIntro: "一份 schema 即使符合 draft-07，仍可能通不过 Structured Outputs。因此第三个标签按 OpenAI 指南里的约束来查。",
     cards: [
-      ["根必须是对象", "根上的 type 是 object。根上的 anyOf 会被拒绝，把联合类型放到某个属性上。"],
-      ["对象必须封闭", "每个对象都要 additionalProperties: false，包括 anyOf 和 $defs 里面的对象。"],
-      ["字段全部必填", "properties 里的每个键都要出现在 required 中。可选字段写成 [\"string\", \"null\"]。"],
-      ["支持的关键字", "string、number、integer、boolean、object、array、enum、anyOf，以及文档里的字符串、数字和数组约束。"],
-      ["不在子集里", "allOf、oneOf、not、if/then/else，以及元组 items（schema 数组）。"],
-      ["规模上限", "5000 个属性、对象嵌套 10 层、1000 个 enum 值，名称和 enum 字符串合计 120000 个字符。"],
+      ["根必须是对象", "根节点的 type 必须是 object。anyOf 写在根上会被拒绝；联合类型要放到某个属性上。"],
+      ["对象必须封闭", "每个对象都要写 additionalProperties: false，anyOf 和 $defs 里面的对象也一样。"],
+      ["字段全部必填", "properties 里的每个键都要列入 required。想表示可选字段时，写成 [\"string\", \"null\"]。"],
+      ["支持的关键字", "可以用 string、number、integer、boolean、object、array、enum、anyOf，以及文档里列出的字符串、数字和数组约束。"],
+      ["不在子集里", "不能用 allOf、oneOf、not、if/then/else，也不能用元组形式的 items，也就是把 items 写成 schema 数组。"],
+      ["规模上限", "属性最多 5000 个，对象最多嵌套 10 层，enum 最多 1000 个值。名称和 enum 字符串合计不超过 120000 个字符。"],
     ],
     sourcesTitle: "来源",
     faqTitle: "常见问题",
     faq: [
-      { q: "它检查哪一版 JSON Schema？", a: "它读取 $schema。缺少这个关键字时默认 draft-07，这也是多数“在线校验 JSON Schema”工具的假设。draft-04、2019-09 和 2020-12 能被识别。exclusiveMinimum 在 draft-04 里是布尔值，在 draft-07 里是数字，混用会被标出。" },
-      { q: "enum 检查看什么？", a: "enum 必须是非空数组。重复值是警告，因为 draft-07 要求它们应当唯一。值和 type 的 JSON 类型不一致也是警告，例如声明为 string 的 enum 里放了一个数字。" },
-      { q: "演练场是完整的 draft-07 校验器吗？", a: "它计算人们最常碰到的关键字：type、enum、const、required、properties、additionalProperties、items、数值和字符串边界、pattern、allOf、anyOf、oneOf、not，以及本地 $ref。patternProperties、if/then/else 和 unevaluated 关键字会被报告为跳过，而不是悄悄当成通过。" },
-      { q: "为什么合法的 JSON Schema 会被 OpenAI 拒绝？", a: "strict: true 的 Structured Outputs 只用一个子集。根必须是对象，而且不能是 anyOf。每个对象都要 additionalProperties: false，每个属性都要列在 required 里。不支持 allOf、oneOf 和 if/then/else。可选字段是仍然必填的可空类型。" },
+      { q: "它检查哪一版 JSON Schema？", a: "它读取 $schema。没有这个关键字时，默认按 draft-07，多数“在线校验 JSON Schema”的工具也是这样假设的。draft-04、2019-09 和 2020-12 能被识别。exclusiveMinimum 在 draft-04 里是布尔值，在 draft-07 里是数字；两种写法混用时会被标出。" },
+      { q: "enum 检查看什么？", a: "enum 必须是非空数组。重复值会记为警告，因为 draft-07 要求这些值应当唯一。值和 type 声明的 JSON 类型不一致，也会记为警告，例如 type 是 string，enum 里却放了一个数字。" },
+      { q: "演练场是完整的 draft-07 校验器吗？", a: "不是。它只检查人们最常碰到的关键字：type、enum、const、required、properties、additionalProperties、items、数值和字符串边界、pattern、allOf、anyOf、oneOf、not，以及本地 $ref。patternProperties、if/then/else 和 unevaluated 关键字会被标成跳过，而不是悄悄当成通过。" },
+      { q: "为什么合法的 JSON Schema 会被 OpenAI 拒绝？", a: "strict: true 的 Structured Outputs 只用其中一个子集。根必须是对象，而且不能是 anyOf。每个对象都要 additionalProperties: false，每个属性都要列在 required 里。allOf、oneOf 和 if/then/else 不受支持。可选字段要写成可空类型，但这个键仍然必须出现在 required 里。" },
     ],
     sources: [
       { label: "JSON Schema draft-07 校验", href: REF.draft07, note: "enum、数值和字符串关键字、required。" },
       { label: "JSON Schema draft-07 核心", href: REF.core07, note: "$ref、$schema，以及 exclusiveMinimum 的变化。" },
-      { label: "OpenAI Structured Outputs", href: REF.openai, note: "子集、additionalProperties、required、嵌套和 enum 上限。" },
+      { label: "OpenAI Structured Outputs", href: REF.openai, note: "子集、additionalProperties、required，以及嵌套和 enum 的上限。" },
     ],
   },
 } as const;
@@ -89,10 +89,10 @@ export function SchemaPage({ locale }: { locale: Locale }) {
       eyebrow={c.eyebrow}
       title={c.h1}
       lead={<>{locale === "zh"
-        ? "粘贴一份 schema，检查 draft-07 的形状和 enum，用实例验证，或看 OpenAI 严格结构化输出会不会接受它。schema 或模型返回的 JSON 很大时，用单独的"
+        ? "粘贴一份 schema。可以检查它是否符合 draft-07、enum 是否合法，用实例验证，也可以看 OpenAI 严格模式会不会接受。schema 或模型返回的 JSON 很大时，改到"
         : "Paste a schema to check draft-07 shape and enums, validate an instance against it, or see whether OpenAI strict structured outputs will accept it. A"}{" "}
         <Link className={textLink} href={localePath(locale, "/tool-result-size/")}>{counter}</Link>
-        {locale === "zh" ? "。" : " is separate, for when the schema or the model’s JSON is large."}
+        {locale === "zh" ? "里估算。" : " is separate, for when the schema or the model’s JSON is large."}
       </>}
       bullets={[...c.bullets]}
       tool={<SchemaTool />}

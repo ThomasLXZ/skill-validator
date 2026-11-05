@@ -53,35 +53,35 @@ const copy = {
   },
   zh: {
     title: "AGENTS.md 校验器 — 检查并生成 agents.md",
-    description: "免费的 agents.md 校验与生成工具。按 agents.md 生态和 Codex 的习惯检查章节、体积和整洁度。普通 Markdown，没有必填 schema。在浏览器里运行。",
+    description: "免费的 agents.md 校验与生成。检查章节、体积和书写是否整齐，依据是 agents.md 生态和 Codex 的习惯。文件仍是普通 Markdown，没有必填 schema。检查在浏览器里完成。",
     keywords: ["agents.md 校验", "AGENTS.md 生成", "agents md", "codex agents.md", "cursor agents.md"],
     eyebrow: "agents.md 工具",
     h1: "AGENTS.md 校验器",
-    bullets: ["惯例检查（不是 schema）", "Codex 32 KiB 体积提示", "生成后可以再检查"],
+    bullets: ["按惯例检查，不是 schema", "Codex 32 KiB 的体积提示", "生成一份后，可以马上再检查"],
     appName: "AGENTS.md 校验器",
     sectionsTitle: "常见章节（惯例）",
-    sectionsIntro: "agents.md 把这些列为常见选择。它们不是必填字段——这个格式没有 schema。只有核心标题看起来缺失时，检查器才会警告。",
-    matched: "按标题文字匹配（不区分大小写）。措辞可以不同。",
+    sectionsIntro: "agents.md 把这些列为常见选择。它们不是必填字段，因为这个格式没有 schema。只有核心标题看起来缺失时，检查器才会警告。",
+    matched: "按标题文字匹配，不区分大小写。标题的具体措辞可以不同。",
     relatedTitle: "相关格式",
-    relatedIntro: "解决的是同一类问题，文件不同。能共用一份事实来源就共用。",
-    skillBody: "带 YAML 前言（name + description）的可复用流程。Claude 只根据 description 决定是否触发。",
-    cursorBody: ".cursor/rules/ 里的范围规则，带 alwaysApply、globs 和 description。Cursor 也会读根目录的 AGENTS.md。",
-    agentsBody: "跨工具的仓库说明。普通 Markdown；单体仓库可以嵌套；离改动最近的那份优先。",
+    relatedIntro: "这几份文件处理的是同一类问题，但格式不同。能共用一份原文时，就不要各写各的。",
+    skillBody: "可复用流程写在 SKILL.md 里，前言包含 name 和 description。Claude 是否触发，只看 description。",
+    cursorBody: "规则放在 .cursor/rules/，用 alwaysApply、globs 和 description 决定何时生效。另外，Cursor 也会读根目录的 AGENTS.md。",
+    agentsBody: "这是给多种工具共用的仓库说明，格式是普通 Markdown。单体仓库里可以按包再放一份；真正生效的，是离改动最近的那份。",
     sourcesTitle: "来源",
-    sourcesNote: "Claude Code 更偏好 CLAUDE.md，以及大约 200 行的软提示，只作为生态提示出现。当成硬规则之前，先核对你所用 Claude Code 版本的文档。",
+    sourcesNote: "有两条只作为生态提示出现：Claude Code 更偏好 CLAUDE.md，以及大约 200 行的软性长度建议。把它们当成硬规则之前，先核对你所用 Claude Code 版本的文档。",
     faqTitle: "常见问题",
     faq: [
-      { q: "AGENTS.md 是有必填字段的正式规范吗？", a: "不是。agents.md 写明没有必填字段——AGENTS.md 就是普通 Markdown，标题可以自定。本工具的章节检查来自 agents.md 的“常见选择”和 OpenAI Codex 文档，是质量提示，不是 schema。" },
-      { q: "AGENTS.md 应该放在哪里？", a: "放在仓库根目录，作为全项目说明。大型单体仓库里，agents.md 建议每个包放一份嵌套的 AGENTS.md；离被编辑路径最近的那份优先。Codex 还支持同一目录下的 AGENTS.override.md。" },
-      { q: "AGENTS.md 可以多大？", a: `OpenAI Codex 在说明文件合计达到 project_doc_max_bytes（默认 32 KiB / ${CODEX_DEFAULT_MAX_BYTES.toLocaleString("en-US")} 字节）后就不再继续加入。文件保持短，细节用链接指向别处。本工具的行数提示是软建议，不是正式上限。` },
-      { q: "AGENTS.md 和 Cursor 规则、Claude Skill 是什么关系？", a: "AGENTS.md 是很多编程 agent 会读的仓库级说明。Cursor 另外还有带范围的 .cursor/rules/*.mdc。Claude Agent Skills 用带 YAML 前言的 SKILL.md 描述可复用流程。最好只有一份事实来源，再用薄适配层（例如一份 CLAUDE.md 引入 @AGENTS.md），避免各个 agent 说法不一致。" },
-      { q: "说明互相冲突时怎么办？", a: "按 agents.md：离被编辑文件最近的 AGENTS.md 优先，用户在对话里明确说的话覆盖一切。" },
-      { q: "这是 agents.md 校验器吗？", a: "是。粘贴 AGENTS.md 或 AGENTS.override.md，它检查人们期望的标题、Codex 32 KiB 的合计上限，以及几条整洁度提示。它和填这些章节的生成器，都是本站的 agents.md 工具。格式没有必填字段，所以这里不会出现 schema 错误。" },
+      { q: "AGENTS.md 是有必填字段的正式规范吗？", a: "不是。agents.md 写明没有必填字段：AGENTS.md 就是普通 Markdown，标题可以自定。本工具的章节检查来自 agents.md 的“常见选择”和 OpenAI Codex 文档，只是质量提示，不是 schema。" },
+      { q: "AGENTS.md 应该放在哪里？", a: "一般放在仓库根目录，作为全项目说明。如果是大型单体仓库，agents.md 建议每个包再放一份；离被编辑路径最近的那份优先。Codex 另外支持同一目录下的 AGENTS.override.md。" },
+      { q: "AGENTS.md 可以多大？", a: `说明文件合计达到 project_doc_max_bytes（默认 32 KiB / ${CODEX_DEFAULT_MAX_BYTES.toLocaleString("en-US")} 字节）后，OpenAI Codex 就不再继续加入。所以这份文件要写短，细节用链接指向别处。本工具里的行数提示只是软建议，不是正式上限。` },
+      { q: "AGENTS.md 和 Cursor 规则、Claude Skill 是什么关系？", a: "AGENTS.md 是很多编程 agent 会读的仓库级说明。Cursor 另外还有 .cursor/rules/*.mdc，用来限定生效范围。Claude Agent Skills 用带 YAML 前言的 SKILL.md 写可复用流程。最好只维护一份原文，其他文件只做一层转发（例如 CLAUDE.md 里引入 @AGENTS.md），免得各个 agent 说法不一致。" },
+      { q: "说明互相冲突时怎么办？", a: "按 agents.md，离被编辑文件最近的 AGENTS.md 优先。用户在对话里明确说的话优先级更高，会覆盖文件里的说明。" },
+      { q: "这是 agents.md 校验器吗？", a: "是。粘贴 AGENTS.md 或 AGENTS.override.md，它会检查人们常写的标题、Codex 合计 32 KiB 的上限，以及几条书写提示。填这些章节的生成器也在这一页。格式没有必填字段，所以这里不会报 schema 错误。" },
     ],
     sources: [
       { label: "agents.md — 开放格式", href: REF.site, note: "官方站：没有必填字段、常见章节、嵌套文件、冲突规则。由 Linux Foundation 的 Agentic AI Foundation 管理。", status: "已核对" },
       { label: "OpenAI Codex：用 AGENTS.md 写自定义说明", href: REF.codex, note: "发现顺序、AGENTS.override.md、project_doc_max_bytes 默认 32 KiB、回退文件名。", status: "已核对" },
-      { label: "OpenAI Codex：最佳实践", href: REF.codexBest, note: "什么该写进 AGENTS.md；保持短；太大就链出去。", status: "已核对" },
+      { label: "OpenAI Codex：最佳实践", href: REF.codexBest, note: "什么该写进 AGENTS.md；保持短；太大就用链接指到别处。", status: "已核对" },
     ],
   },
 } as const;
@@ -99,7 +99,7 @@ export function AgentsMdPage({ locale }: { locale: Locale }) {
       eyebrow={c.eyebrow}
       title={c.h1}
       lead={locale === "zh" ? (
-        <>给 Codex、Cursor 和 Copilot 用的开放说明文件做校验。粘贴 <code className="font-mono text-[0.9em]">AGENTS.md</code>，按 <a className={textLink} href={REF.site} target="_blank" rel="noopener noreferrer">agents.md</a> 和 Codex 文档检查章节、体积和整洁度，或生成一份起步文件。普通 Markdown，没有必填 schema。</>
+        <>给 Codex、Cursor 和 Copilot 用的开放说明文件做校验。粘贴 <code className="font-mono text-[0.9em]">AGENTS.md</code>，按 <a className={textLink} href={REF.site} target="_blank" rel="noopener noreferrer">agents.md</a> 和 Codex 文档检查章节、体积和书写是否整齐，也可以先生成一份起步文件。文件仍是普通 Markdown，没有必填 schema。</>
       ) : (
         <>An agents.md validator for the open instruction file used by Codex, Cursor, and Copilot. Paste <code className="font-mono text-[0.9em]">AGENTS.md</code> to check sections, size, and hygiene against <a className={textLink} href={REF.site} target="_blank" rel="noopener noreferrer">agents.md</a> and the Codex docs — or generate a starter. Plain Markdown; no required schema.</>
       )}

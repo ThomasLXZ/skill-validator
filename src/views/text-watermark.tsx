@@ -39,31 +39,31 @@ const copy = {
   },
   zh: {
     title: "Claude 文本水印检查：采样参数",
-    description: "检查一条 Claude Messages 请求里的 temperature、top_p 和 top_k。在 Claude Sonnet 4.6 和 Opus 4.6 上，非默认采样可能丢掉 Anthropic 的文本水印。更新的模型会拒绝其中大多数字段。",
+    description: "检查一条 Claude Messages 请求里的 temperature、top_p 和 top_k。在 Claude Sonnet 4.6 和 Opus 4.6 上，非默认采样可能丢掉 Anthropic 的文本水印。更晚的模型会拒绝其中大多数字段。",
     keywords: ["claude 文本水印", "claude 采样参数", "temperature top_p top_k", "claude sonnet 4.6 水印"],
     eyebrow: "Claude 文本水印",
     h1: "采样会丢掉水印吗？",
-    bullets: ["Sonnet 4.6 与 Opus 4.6", "省略比发送 1.0 更稳", "更新的模型拒绝非默认值"],
+    bullets: ["针对 Sonnet 4.6 与 Opus 4.6", "省略，优于直接发送 1.0", "更晚的模型会拒绝非默认值"],
     appName: "Claude 文本水印采样检查",
     docsTitle: "文档实际是怎么写的",
-    docsIntro: "下面这些就是检查器实现的规则。它没有另外发明一个检测器。",
+    docsIntro: "下面这些是检查器真正实现的规则。它没有另外做一个水印检测器。",
     cards: [
-      ["省略这三个键", "如果依赖水印，就不要发送 temperature、top_p 和 top_k，包括库替你填上的默认值。"],
-      ["Sonnet 4.6 与 Opus 4.6", "非默认值可能让输出不再带文本水印。水印本身不加 token，也没有隐藏字符。"],
-      ["Opus 4.6 之后", "不是 1.0 的 temperature、低于 0.99 的 top_p，以及任何 top_k 都会被拒绝。不要设置它们。"],
+      ["省略这三个键", "如果要依赖水印，就不要发送 temperature、top_p 和 top_k，库替你填上的默认值也算。"],
+      ["Sonnet 4.6 与 Opus 4.6", "非默认值可能让输出不再带文本水印。另外，水印本身不增加 token，也没有隐藏字符。"],
+      ["Opus 4.6 之后", "不是 1.0 的 temperature、低于 0.99 的 top_p，以及任何 top_k，都会被拒绝。这些键不要设置。"],
     ],
     sourcesTitle: "来源",
     faqTitle: "常见问题",
     faq: [
-      { q: "它能从文本里检测出水印吗？", a: "不能。Anthropic 的检测器是另一项预览。这一页只读请求 JSON，把 temperature、top_p、top_k 和已公布的采样规则对照。它不能告诉你一段文字有没有水印。" },
-      { q: "改了采样之后，哪些模型会失去水印？", a: "Anthropic 的文本水印页面说，当 temperature、top_p 或 top_k 被设成非默认值时，Claude Sonnet 4.6 的输出可能不再带水印；如果依赖这个标记，三个参数都应该省略。帮助中心的文章把 Claude Opus 4.6 和 Claude Sonnet 4.6 都列进了这种情况。其他模型 id 只会得到一条提示，让你去核对当前表格，而不是警告。" },
-      { q: "为什么 temperature 设成 1 仍然是提示？", a: "1.0 是通常的默认值，但文档要求省略这个参数，包括框架或客户端库替你插入的值。发送这个键，和根本不写，不是一回事。" },
-      { q: "Opus 4.6 之后的模型呢？", a: "API 参考说，Claude Opus 4.6 之后发布的模型会拒绝不是 1.0 的 temperature、低于 0.99 的 top_p，以及任何 top_k。1.0 或大于等于 0.99 的 top_p 只是为了兼容而保留。当模型 id 看起来属于那一代时，检查器把这些标成错误。" },
+      { q: "它能从文本里检测出水印吗？", a: "不能。Anthropic 的检测器是另一项预览功能。这一页只读取请求 JSON，用来对照 temperature、top_p、top_k 和已经公布的采样规则。所以它不能判断一段文字里有没有水印。" },
+      { q: "改了采样之后，哪些模型会失去水印？", a: "Anthropic 的文本水印页面写的是：temperature、top_p 或 top_k 被设成非默认值时，Claude Sonnet 4.6 的输出可能不再带水印。如果要依赖这个标记，三个参数都应省略。帮助中心的文章把 Claude Opus 4.6 和 Claude Sonnet 4.6 都列进了这种情况。其他模型 id 不会因此报警，只会提示你去核对当前的表格。" },
+      { q: "为什么 temperature 设成 1 仍然是提示？", a: "1.0 通常就是默认值。但文档要求把这个参数整个省略，包括框架或客户端库替你写上的值。请求里出现这个键，和完全不写，不是一回事。" },
+      { q: "Opus 4.6 之后的模型呢？", a: "API 参考写明，Claude Opus 4.6 之后发布的模型会拒绝三件事：不是 1.0 的 temperature、低于 0.99 的 top_p，以及任何 top_k。等于 1.0 的 temperature，或大于等于 0.99 的 top_p，只是为了兼容而保留。如果模型 id 看起来属于这一代，检查器会把上述取值标成错误。" },
     ],
     sources: [
       { label: "文本水印", href: REF.watermark, status: "文档", note: "Sonnet 4.6 的采样说明：省略 temperature、top_p 和 top_k。" },
       { label: "Claude 如何标记 AI 生成的内容", href: REF.marking, status: "帮助", note: "模型表。非默认采样点名了 Opus 4.6 和 Sonnet 4.6。" },
-      { label: "API 参考：采样参数", href: REF.sampling, status: "参考", note: "Opus 4.6 之后的模型拒绝非默认的 temperature、top_p 和 top_k。" },
+      { label: "API 参考：采样参数", href: REF.sampling, status: "参考", note: "Opus 4.6 之后的模型会拒绝非默认的 temperature、top_p 和 top_k。" },
     ],
   },
 } as const;
@@ -81,7 +81,7 @@ export function WatermarkPage({ locale }: { locale: Locale }) {
       eyebrow={c.eyebrow}
       title={c.h1}
       lead={locale === "zh" ? (
-        <>粘贴一份 Messages API 请求体。检查器对照 Anthropic 的文本水印说明，以及更新模型上的采样限制，查看 <code className="font-mono text-[0.9em]">temperature</code>、<code className="font-mono text-[0.9em]">top_p</code> 和 <code className="font-mono text-[0.9em]">top_k</code>。</>
+        <>粘贴一份 Messages API 的请求体。检查器会查看 <code className="font-mono text-[0.9em]">temperature</code>、<code className="font-mono text-[0.9em]">top_p</code> 和 <code className="font-mono text-[0.9em]">top_k</code>：一边对照 Anthropic 的文本水印说明，一边对照较新模型的采样限制。</>
       ) : (
         <>Paste a Messages API body. The checker looks at <code className="font-mono text-[0.9em]">temperature</code>, <code className="font-mono text-[0.9em]">top_p</code>, and <code className="font-mono text-[0.9em]">top_k</code> against Anthropic’s text-watermark note and the sampling limits on newer models.</>
       )}
