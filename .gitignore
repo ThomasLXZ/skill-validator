@@ -1,11 +1,15 @@
 node_modules/
 .next/
 out/
+.wrangler/
+.dev.vars*
+!.dev.vars.example
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
 .env*
 !.env.example
+!.env.production
 # Intentional bad fixture (placeholder token) required by tests/validator.test.ts
 !fixtures/bad/leaky-secrets/.env
 screenshots/
