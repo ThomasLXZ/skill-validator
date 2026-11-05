@@ -5,6 +5,8 @@ import { forwardRef, useState } from "react";
 import { AlertTriangle, ArrowUpRight, Check, CheckCircle2, Copy, Download, Info, Lock, XCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { countFindings, type Finding, type Severity } from "@/lib/common/finding";
+import { chrome, sevCount } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import type { CodeEditorHandle, LineDiagnostic } from "../CodeEditor";
 
 export const Editor = dynamic(() => import("../CodeEditor"), {
@@ -73,26 +75,28 @@ export function PaneHeader({ icon, title, children }: { icon?: React.ReactNode; 
   );
 }
 
-export function LocalNote({ children = "Checked locally. Nothing you paste is uploaded." }: { children?: React.ReactNode }) {
+export function LocalNote({ children }: { children?: React.ReactNode }) {
+  const locale = useLocale();
   return (
     <div className="flex items-center gap-2 border-t bg-subtle px-4 py-2 text-[12px] text-muted-foreground">
       <Lock className="size-3" aria-hidden />
-      {children}
+      {children ?? chrome(locale).localNote}
     </div>
   );
 }
 
 export function SeverityCounts({ findings }: { findings: Finding[] }) {
   const c = countFindings(findings);
+  const locale = useLocale();
   return (
     <div className="counts flex flex-wrap gap-1.5">
       {(["error", "warning", "tip"] as Severity[]).map((g) => {
-        const { text, soft, Icon, label } = SEV[g];
+        const { text, soft, Icon } = SEV[g];
         const n = c[g];
         return (
           <span key={g} className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium", n ? [text, soft] : "bg-muted text-muted-foreground")}>
             <Icon className="size-3" aria-hidden />
-            {n} {n === 1 ? label.slice(0, -1).toLowerCase() : label.toLowerCase()}
+            {sevCount(locale, g, n)}
           </span>
         );
       })}
@@ -100,12 +104,14 @@ export function SeverityCounts({ findings }: { findings: Finding[] }) {
   );
 }
 
-export function FindingsList({ findings, onJump, empty = "No issues found." }: { findings: Finding[]; onJump?(line: number): void; empty?: string }) {
+export function FindingsList({ findings, onJump, empty }: { findings: Finding[]; onJump?(line: number): void; empty?: string }) {
+  const locale = useLocale();
+  const copy = chrome(locale);
   if (!findings.length)
     return (
       <div className="ok flex items-center gap-3 rounded-xl border border-ok/30 bg-ok-soft px-4 py-3 text-[14px] text-ok">
         <CheckCircle2 className="size-4 shrink-0" aria-hidden />
-        {empty}
+        {empty ?? copy.noIssues}
       </div>
     );
   return (
@@ -121,17 +127,17 @@ export function FindingsList({ findings, onJump, empty = "No issues found." }: {
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
                   <code className="font-mono text-[11.5px]">{i.rule}</code>
                   {i.line ? (onJump ? (
-                    <button onClick={() => onJump(i.line!)} className="font-mono text-[11.5px] underline decoration-dotted underline-offset-2 hover:text-foreground" title="Show in editor">line {i.line}</button>
-                  ) : <span className="font-mono text-[11.5px]">line {i.line}</span>) : null}
+                    <button onClick={() => onJump(i.line!)} className="font-mono text-[11.5px] underline decoration-dotted underline-offset-2 hover:text-foreground" title={copy.showInEditor}>{copy.line(i.line)}</button>
+                  ) : <span className="font-mono text-[11.5px]">{copy.line(i.line)}</span>) : null}
                   {i.ref && (
                     <a className="ml-auto inline-flex items-center gap-0.5 hover:text-foreground" href={i.ref} target="_blank" rel="noopener noreferrer">
-                      Source<ArrowUpRight className="size-3" aria-hidden />
+                      {copy.source}<ArrowUpRight className="size-3" aria-hidden />
                     </a>
                   )}
                 </div>
                 {i.fix && (
                   <div className="mt-2.5 rounded-lg bg-subtle px-3 py-2 text-[12.5px] leading-relaxed ring-1 ring-border ring-inset">
-                    <span className="font-medium">Fix: </span>
+                    <span className="font-medium">{copy.fix} </span>
                     <span className="whitespace-pre-wrap text-muted-foreground">{i.fix}</span>
                   </div>
                 )}
@@ -165,6 +171,8 @@ export function SectionTitle({ children, count }: { children: React.ReactNode; c
 
 export function CopyButtons({ text, filename }: { text: string; filename: string }) {
   const [copied, setCopied] = useState(false);
+  const locale = useLocale();
+  const labels = chrome(locale);
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
   };
@@ -176,8 +184,8 @@ export function CopyButtons({ text, filename }: { text: string; filename: string
   };
   return (
     <>
-      <GhostButton onClick={copy}>{copied ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}{copied ? "Copied" : "Copy"}</GhostButton>
-      <GhostButton onClick={download}><Download className="size-3.5" aria-hidden />Download</GhostButton>
+      <GhostButton onClick={copy}>{copied ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}{copied ? labels.copied : labels.copy}</GhostButton>
+      <GhostButton onClick={download}><Download className="size-3.5" aria-hidden />{labels.download}</GhostButton>
     </>
   );
 }

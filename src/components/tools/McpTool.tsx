@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { Hammer, ListTree, Terminal } from "lucide-react";
 import { buildMcpCurl, generateMcpConfig, inspectMcpTools, sampleFromSchema, validateMcpConfig } from "@/lib/mcp";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import {
   CopyButtons, Editor, Field, FindingsList, GhostButton, inputCls, LocalNote, PaneHeader, SectionTitle, SeverityCounts,
   Segmented, Tabs, ToolCard, Toolbar,
@@ -41,6 +43,7 @@ const SAMPLE_CONFIG = `{
 }`;
 
 export default function McpTool() {
+  const labels = chrome(useLocale()).mcp;
   const [tab, setTab] = useState<Tab>("inspect");
   const [toolsText, setToolsText] = useState(SAMPLE_TOOLS);
   const [url, setUrl] = useState("http://127.0.0.1:8080/mcp");
@@ -88,9 +91,9 @@ export default function McpTool() {
           value={tab}
           onChange={setTab}
           tabs={[
-            { id: "inspect", label: "Inspector", Icon: ListTree },
-            { id: "curl", label: "Test curl", Icon: Terminal },
-            { id: "config", label: "Config", Icon: Hammer },
+            { id: "inspect", label: labels.inspect, Icon: ListTree },
+            { id: "curl", label: labels.curl, Icon: Terminal },
+            { id: "config", label: labels.config, Icon: Hammer },
           ]}
         />
         <span className="hidden text-[12.5px] text-muted-foreground md:block">Runs locally. Curl is copied, not sent.</span>
@@ -167,7 +170,7 @@ export default function McpTool() {
       {tab === "config" && (
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="space-y-4 border-b p-4 sm:p-5 lg:h-[680px] lg:overflow-y-auto lg:border-b-0 lg:border-r">
-            <Segmented<"build" | "check"> options={[{ id: "build", label: "Generate" }, { id: "check", label: "Check JSON" }]} value={genMode} onChange={setGenMode} />
+            <Segmented<"build" | "check"> options={[{ id: "build", label: labels.generate }, { id: "check", label: labels.checkJson }]} value={genMode} onChange={setGenMode} />
             {genMode === "build" ? (
               <>
                 <Field label="Server name">

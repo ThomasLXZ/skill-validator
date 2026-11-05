@@ -13,6 +13,8 @@ import {
   Tabs, toDiagnostics, ToolCard, Toolbar, type CodeEditorHandle,
 } from "./ui";
 import { cn } from "@/lib/cn";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 
 type Tab = "validate" | "build";
 
@@ -103,6 +105,7 @@ function ScoreRing({ score, grade }: { score: number; grade: Grade }) {
 const fmt = (n: number) => n.toLocaleString("en-US");
 
 export default function AgentsMdTool() {
+  const labels = chrome(useLocale()).agents;
   const [tab, setTab] = useState<Tab>("validate");
   const [filename, setFilename] = useState<string>(PRESETS.bad.filename);
   const [text, setText] = useState<string>(PRESETS.bad.text);
@@ -138,8 +141,8 @@ export default function AgentsMdTool() {
           value={tab}
           onChange={setTab}
           tabs={[
-            { id: "validate", label: "Check", Icon: ShieldCheck },
-            { id: "build", label: "Generate", Icon: Hammer },
+            { id: "validate", label: labels.check, Icon: ShieldCheck },
+            { id: "build", label: labels.generate, Icon: Hammer },
           ]}
         />
         <span className="hidden text-[12.5px] text-muted-foreground md:block">

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import HtmlLang from "@/components/HtmlLang";
 import "./globals.css";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
@@ -34,13 +35,17 @@ export const viewport: Viewport = {
 // Runs before paint so the saved / system theme never flashes.
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
 
+// URL is the source of truth. This only sets <html lang> before paint.
+const LANG_SCRIPT = `(function(){try{var p=location.pathname;var zh=p==="/zh"||p.indexOf("/zh/")===0;document.documentElement.lang=zh?"zh-Hans":"en"}catch(e){}})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_SCRIPT }} />
       </head>
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased"><HtmlLang />{children}</body>
     </html>
   );
 }

@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { Droplets } from "lucide-react";
 import { checkSampling, type ModelClass } from "@/lib/claude-sampling";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import { Editor, FindingsList, GhostButton, LocalNote, PaneHeader, SeverityCounts, Stat, ToolCard, Toolbar } from "./ui";
 
 const EXAMPLES: { id: string; label: string; body: Record<string, unknown> }[] = [
@@ -20,6 +22,7 @@ const CLASS_LABEL: Record<ModelClass, string> = {
 };
 
 export default function SamplingTool() {
+  const labels = chrome(useLocale()).sampling;
   const [text, setText] = useState(() => JSON.stringify(EXAMPLES[1].body, null, 2));
   const report = useMemo(() => checkSampling(text), [text]);
   const shown = report.findings.filter((f) => f.rule !== "WM_OMITTED");
@@ -42,7 +45,7 @@ export default function SamplingTool() {
         <div className="flex min-h-[420px] flex-col border-b lg:h-[620px] lg:border-b-0 lg:border-r">
           <PaneHeader title="Request JSON">
             {EXAMPLES.map((e) => (
-              <GhostButton key={e.id} onClick={() => setText(JSON.stringify(e.body, null, 2))}>{e.label}</GhostButton>
+              <GhostButton key={e.id} onClick={() => setText(JSON.stringify(e.body, null, 2))}>{labels[e.id === "omit" ? "omit" : e.id === "temp" ? "temp0" : e.id === "default" ? "temp1" : "sonnet5"]}</GhostButton>
             ))}
           </PaneHeader>
           <div className="h-[420px] min-h-0 flex-1 lg:h-auto">
