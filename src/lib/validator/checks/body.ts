@@ -59,5 +59,23 @@ export const bodyCheck: Check = ({ parsed }) => {
   if (unqualifiedMcp) {
     issues.push({ rule: "BODY_MCP_UNQUALIFIED", severity: "tip", category: "body", file: "SKILL.md", line: at(unqualifiedMcp.idx), message: "Tool referenced without a server prefix. If this is an MCP tool, Claude may fail to find it.", fix: "Use the fully qualified form ServerName:tool_name, e.g. GitHub:create_issue.", ref: BEST_PRACTICES_URL });
   }
+  const cite = citationWithoutSource(prose, body);
+  if (cite) {
+    issues.push({ rule: "BODY_CITE_NO_SOURCE", severity: "tip", category: "body", file: "SKILL.md", line: at(cite.idx), message: "Citation marker found, but the skill never links an http(s) source.", fix: "Put the source URL next to the claim. This check only looks for a link; it does not decide whether the source supports the sentence.", ref: BEST_PRACTICES_URL });
+  }
   return issues;
 };
+
+const AUTHOR_YEAR = /\([A-Z][A-Za-z.'’-]+(?:\s+(?:et al\.|&|and)\s+[A-Z][A-Za-z.'’-]+)?,?\s+(?:19|20)\d{2}\)/;
+const BRACKET_CITE = /\[\d{1,3}\](?!\()/;
+const CITE_WORD = /\b(according to|et al\.|citations?|sources?)\b/i;
+
+/** Narrow tip: author-year citations, or [1] plus citation wording, with no URL anywhere in the body. */
+function citationWithoutSource(prose: Array<{ text: string; idx: number }>, body: string): { text: string; idx: number } | undefined {
+  if (/https?:\/\//i.test(body)) return;
+  const author = prose.find((l) => AUTHOR_YEAR.test(l.text));
+  if (author) return author;
+  const bracket = prose.find((l) => BRACKET_CITE.test(l.text));
+  if (bracket && prose.some((l) => CITE_WORD.test(l.text))) return bracket;
+  return;
+}

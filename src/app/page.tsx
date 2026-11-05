@@ -27,6 +27,10 @@ const FAQ = [
     q: "Is this an official Anthropic tool?",
     a: "No. It is an independent validator built from the public Agent Skills specification and Anthropic's published documentation.",
   },
+  {
+    q: "Can it check citations in a skill?",
+    a: "If the instructions use an author-year citation such as (Smith, 2024), or a marker like [1] next to wording about a source, and the skill never links an http(s) URL, you get a tip: BODY_CITE_NO_SOURCE. It does not fetch the page or decide whether the source supports the claim. Add the URL, or drop the marker.",
+  },
 ];
 
 const jsonLd = {
@@ -51,7 +55,7 @@ const RULES = [
   { Icon: Braces, title: "Frontmatter", text: "Starts on line 1 with ---, parses as YAML, has no duplicate or unknown keys.", ids: ["FM_MISSING", "FM_YAML_INVALID", "FM_UNKNOWN_KEY"] },
   { Icon: Tag, title: "name", text: "1–64 characters of a–z, 0–9 and hyphens. No leading, trailing or double hyphens, no “claude” or “anthropic”, and it matches the folder name.", ids: ["NAME_CHARSET", "NAME_RESERVED_WORD", "NAME_DIR_MISMATCH"] },
   { Icon: FileSearch, title: "description", text: "1–1024 characters, no angle brackets, written in third person, and says both what the skill does and when to use it.", ids: ["DESC_NO_WHEN", "DESC_VAGUE", "DESC_TOO_LONG"] },
-  { Icon: ScrollText, title: "Body", text: "Under 500 lines and about 5k tokens, organised with headings, free of Windows paths and dated instructions.", ids: ["BODY_TOO_MANY_LINES", "BODY_TIME_SENSITIVE"] },
+  { Icon: ScrollText, title: "Body", text: "Under 500 lines and about 5k tokens, organised with headings, free of Windows paths and dated instructions. Citation markers should link a source.", ids: ["BODY_TOO_MANY_LINES", "BODY_CITE_NO_SOURCE"] },
   { Icon: Link2, title: "References", text: "Every linked file and script exists with the same casing, paths are relative and one level deep, anchors resolve.", ids: ["REF_MISSING_FILE", "REF_CASE_MISMATCH", "REF_NESTED"] },
   { Icon: ShieldAlert, title: "Scripts and security", text: "Scripts are referenced and their dependencies documented. No hard-coded API keys, .env files or curl | sh.", ids: ["SEC_SECRET", "SEC_DANGEROUS_COMMAND", "STRUCT_ENV_FILE"] },
 ];
@@ -100,7 +104,7 @@ export default function Home() {
                 Free, and it runs entirely in your browser.
               </p>
               <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-muted-foreground">
-                {["71 rules from the spec and Anthropic's guide", "Errors underlined on the exact line", "Nothing leaves your browser"].map((t) => (
+                {["72 rules from the spec and Anthropic's guide", "Errors underlined on the exact line", "Nothing leaves your browser"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <Check className="size-4 text-ok" aria-hidden />
                     {t}
@@ -119,7 +123,7 @@ export default function Home() {
             <div className="max-w-[620px]">
               <h2 className="text-[28px] font-semibold tracking-[-0.025em] sm:text-[32px]">What the validator checks</h2>
               <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground">
-                71 rules taken from the public specification, Anthropic&apos;s best practices and the official
+                72 rules taken from the public specification, Anthropic&apos;s best practices and the official
                 <code className="mx-1 font-mono text-[0.9em]">quick_validate.py</code>. Errors block an upload, warnings hurt triggering, tips are polish.
               </p>
             </div>
@@ -168,7 +172,7 @@ export default function Home() {
             <div className="max-w-[620px]">
               <h2 className="text-[28px] font-semibold tracking-[-0.025em] sm:text-[32px]">More tools</h2>
               <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground">
-                Same browser-only approach for related agent formats: AGENTS.md, Cursor rules, AI robots.txt, and MCP payload size.
+                Same browser-only approach for related agent files: an AGENTS.md validator, JSON Schema and structured output, an MCP server test suite, sampling checks, and an MCP token counter.
               </p>
             </div>
             <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-3">

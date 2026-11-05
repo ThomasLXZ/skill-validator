@@ -173,3 +173,24 @@ describe("helpers", () => {
     expect(canSimulate(validateSkill(loadFixture("bad/no-frontmatter")))).toBe(false);
   });
 });
+
+describe("citation tip", () => {
+  const body = "# Title\n\n## Steps\n\n1. Do the thing carefully and report results back to the user.\n";
+  it("tips on an author-year citation with no URL", () => {
+    const text = md(`${GOOD_DESC}`, `${body}\nThe limit is documented (Smith, 2024).\n`);
+    expect(rules(validateSkill(bundleFromText(text)))).toContain("BODY_CITE_NO_SOURCE");
+  });
+  it("tips on [1] when the prose also talks about a source", () => {
+    const text = md(`${GOOD_DESC}`, `${body}\nSee [1]. According to the source, retry once.\n`);
+    expect(rules(validateSkill(bundleFromText(text)))).toContain("BODY_CITE_NO_SOURCE");
+  });
+  it("stays quiet for a bare [1] and when any http URL is present", () => {
+    expect(rules(validateSkill(bundleFromText(md(`${GOOD_DESC}`, `${body}\nChoose option [1].\n`))))).not.toContain("BODY_CITE_NO_SOURCE");
+    const linked = md(`${GOOD_DESC}`, `${body}\nThe limit is documented (Smith, 2024). See https://example.com/spec\n`);
+    expect(rules(validateSkill(bundleFromText(linked)))).not.toContain("BODY_CITE_NO_SOURCE");
+  });
+  it("ignores citation markers inside code fences", () => {
+    const text = md(`${GOOD_DESC}`, `${body}\n\`\`\`\n(Smith, 2024)\n\`\`\`\n`);
+    expect(rules(validateSkill(bundleFromText(text)))).not.toContain("BODY_CITE_NO_SOURCE");
+  });
+});
