@@ -43,28 +43,28 @@ const copy = {
   },
   zh: {
     title: "MCP Token 计数与工具结果体积检查",
-    description: "给工具结果用的 MCP token 计数器。粘贴 MCP 工具结果或任意文本，估算 token、字符和字节，再对照 Claude Code 的 1 万警告线和 2.5 万默认上限。",
+    description: "给工具结果用的 MCP token 计数。粘贴 MCP 工具结果或任意文本，先估算 token、字符和字节，再对照 Claude Code 的 1 万警告线和 2.5 万默认上限。",
     keywords: ["mcp token 计数", "MCP token counter", "工具结果太大", "MAX_MCP_OUTPUT_TOKENS", "token 计数器"],
     eyebrow: "MCP token 计数",
     h1: "这条工具结果有多少 token？",
-    bullets: ["识别 MCP CallToolResult", `${n(LIMITS.warnTokens)} / ${n(LIMITS.defaultMaxTokens)} token 上限`, "任意粘贴的文本都能算"],
+    bullets: ["能识别 MCP CallToolResult", `对照 ${n(LIMITS.warnTokens)} / ${n(LIMITS.defaultMaxTokens)} 的 token 上限`, "粘贴任意文本都能估算"],
     appName: "MCP Token 计数器",
     shrinkTitle: "怎样缩小工具结果",
     limitsTitle: "我们对照的上限",
     faqTitle: "常见问题",
     tips: [
-      { t: "给列表分页", d: "返回一页条目再加 nextCursor，并接受 cursor 参数。MCP 自己的列表方法就是这个模式。" },
-      { t: "返回资源链接", d: "大文件或导出结果用 resource_link 内容块，让客户端需要时再用 resources/read 去取。" },
-      { t: "让调用方选字段", d: "加一个 fields 或 verbose 参数，让模型只要它需要的部分。去掉 null 和空数组。" },
-      { t: "压缩 JSON", d: "美化打印会多出模型仍然要读的空白。序列化时不要缩进。" },
+      { t: "给列表分页", d: "返回一页条目，再附上 nextCursor，并接受 cursor 参数。MCP 自己的列表方法用的就是这个模式。" },
+      { t: "返回资源链接", d: "文件或导出结果很大时，改返回 resource_link 内容块。客户端需要时，再用 resources/read 去取。" },
+      { t: "让调用方选字段", d: "加一个 fields 或 verbose 参数，让模型只取它需要的字段。同时去掉 null 和空数组。" },
+      { t: "压缩 JSON", d: "美化打印会多出空白，模型仍然要读这些空白。序列化时不要缩进。" },
       { t: "不要发两遍", d: "如果已经返回 structuredContent，文本块就写短一点，不要把整份 JSON 再重复一遍。" },
-      { t: "截断时指出下一步", d: "必须截断时说明情况，并告诉模型怎么继续，例如“显示 1240 行中的 50 行；用 offset=50 再调用一次”。" },
+      { t: "截断时指出下一步", d: "必须截断时，先说明截断了，再告诉模型怎么继续。例如：“显示 1240 行中的 50 行；用 offset=50 再调用一次”。" },
     ],
     faq: [
-      { q: "Claude Code 的 MCP 输出上限是多少？", a: `MCP 工具结果超过 ${n(LIMITS.warnTokens)} token 时 Claude Code 会警告，默认截到 ${n(LIMITS.defaultMaxTokens)} token。可以用环境变量 MAX_MCP_OUTPUT_TOKENS 改这个上限。` },
-      { q: "token 估算有多准？", a: "这是启发式：英文大约 4 个字符一个 token，JSON 或代码大约 3 个，每个汉字大约 1 个。要某个模型的精确数字，用 Anthropic 的 token counting API。" },
-      { q: "其他 MCP 客户端用同样的上限吗？", a: "不用。MCP 规范没有规定体积上限。每个客户端自己决定，所以无论面向谁，结果都宜小。" },
-      { q: "可以把它当成 MCP token 计数器吗？", a: "可以。粘贴工具结果、工具描述或其他文本。计数是估算：英文大约 4 个字符一个 token，JSON 或代码大约 3 个，每个汉字大约 1 个。它不是模型的分词器。要 Claude 某个模型的精确数字，用 Anthropic 的 token counting API。" },
+      { q: "Claude Code 的 MCP 输出上限是多少？", a: `MCP 工具结果超过 ${n(LIMITS.warnTokens)} token 时，Claude Code 会警告，并默认截到 ${n(LIMITS.defaultMaxTokens)} token。要用别的上限，设置环境变量 MAX_MCP_OUTPUT_TOKENS。` },
+      { q: "token 估算有多准？", a: "这是启发式估算，不是模型的分词结果：英文大约 4 个字符算 1 个 token，JSON 或代码大约 3 个字符，每个汉字大约 1 个。要某个具体模型的精确数字，用 Anthropic 的 token counting API。" },
+      { q: "其他 MCP 客户端用同样的上限吗？", a: "不用。MCP 规范没有规定体积上限，每个客户端自己决定。所以不管客户端是哪一个，都把结果控制得小一些。" },
+      { q: "可以把它当成 MCP token 计数器吗？", a: "可以。粘贴工具结果、工具描述或其他文本都能估算。英文大约 4 个字符算 1 个 token，JSON 或代码大约 3 个字符，每个汉字大约算 1 个 token。它不是模型的分词器。要 Claude 某个模型的精确数字，用 Anthropic 的 token counting API。" },
     ],
     sources: [
       { label: "Claude Code：MCP 输出上限", href: REF.claudeCodeMcp, note: "警告阈值、MAX_MCP_OUTPUT_TOKENS、maxResultSizeChars。" },
@@ -88,10 +88,10 @@ export function TokensPage({ locale }: { locale: Locale }) {
       eyebrow={c.eyebrow}
       title={c.h1}
       lead={<>{locale === "zh"
-        ? "给工具返回值用的 MCP token 计数。看字符、字节和估算 token，对照 Claude Code 已公开的上限，以及该砍哪里。工具列表本身到"
+        ? "这是给工具返回值用的 MCP token 计数。先看字符、字节和估算的 token，再对照 Claude Code 已公开的上限，并判断该删哪里。工具列表本身请到"
         : "An MCP token counter for what your tool returns. See characters, bytes, and estimated tokens, how that compares with Claude Code's documented limits, and what to cut. Check the tool list itself on the"}{" "}
         <a className={textLink} href={localePath(locale, "/mcp/")}>{locale === "zh" ? "MCP 测试页" : "MCP test suite"}</a>
-        {locale === "zh" ? "上看。" : "."}
+        {locale === "zh" ? "检查。" : "."}
       </>}
       bullets={[...c.bullets]}
       tool={<ToolResultSizeTool />}
@@ -111,7 +111,7 @@ export function TokensPage({ locale }: { locale: Locale }) {
         </div>
       </ContentSection>
       <ContentSection title={c.limitsTitle} intro={locale === "zh" ? (
-        <>来自 Claude Code 文档：超过 {n(LIMITS.warnTokens)} token 警告，默认上限 {n(LIMITS.defaultMaxTokens)} token（<code className="font-mono text-[14px]">MAX_MCP_OUTPUT_TOKENS</code>），文本结果超过 {n(LIMITS.textCharsToFile)} 个字符会存成文件，服务器 <code className="font-mono text-[14px]">maxResultSizeChars</code> 的硬顶是 {n(LIMITS.hardCeilingChars)} 个字符，错误结果超过 {n(LIMITS.errorTruncateAboveChars)} 个字符时只保留前 {n(LIMITS.errorKeepChars)} 个。</>
+        <>数字来自 Claude Code 文档，分几档。超过 {n(LIMITS.warnTokens)} token 会警告；默认上限是 {n(LIMITS.defaultMaxTokens)} token（<code className="font-mono text-[14px]">MAX_MCP_OUTPUT_TOKENS</code>）。文本结果超过 {n(LIMITS.textCharsToFile)} 个字符，会存成文件。服务器的 <code className="font-mono text-[14px]">maxResultSizeChars</code> 硬顶是 {n(LIMITS.hardCeilingChars)} 个字符。错误结果超过 {n(LIMITS.errorTruncateAboveChars)} 个字符时，只保留前 {n(LIMITS.errorKeepChars)} 个。</>
       ) : (
         <>From the Claude Code docs: a warning above {n(LIMITS.warnTokens)} tokens, a default cap of {n(LIMITS.defaultMaxTokens)} tokens (<code className="font-mono text-[14px]">MAX_MCP_OUTPUT_TOKENS</code>), text results over {n(LIMITS.textCharsToFile)} characters saved to a file, a {n(LIMITS.hardCeilingChars)}-character ceiling for a server&apos;s <code className="font-mono text-[14px]">maxResultSizeChars</code>, and error results over {n(LIMITS.errorTruncateAboveChars)} characters cut to the first {n(LIMITS.errorKeepChars)}.</>
       )}>

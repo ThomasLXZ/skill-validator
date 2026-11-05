@@ -43,29 +43,29 @@ const copy = {
   },
   zh: {
     title: "MCP Server 测试：工具检查、curl 与配置生成",
-    description: "在浏览器里测试 MCP server：检查一份 tools/list，为 initialize 和 tools/call 生成 Streamable HTTP curl，并为 Claude Desktop、Cursor、VS Code 生成或检查 MCP 配置。",
+    description: "在浏览器里测试 MCP server。检查一份 tools/list，为 initialize 和 tools/call 生成 Streamable HTTP curl，并为 Claude Desktop、Cursor、VS Code 生成或检查 MCP 配置。",
     keywords: ["mcp server 测试", "mcp curl", "mcp 工具检查", "mcp 配置生成", "mcp.json"],
     eyebrow: "MCP server 测试套件",
     h1: "检查工具、写 curl、生成配置",
-    bullets: ["工具列表检查", `${MCP_PROTOCOL} 的 curl`, "Claude、Cursor、VS Code"],
+    bullets: ["检查工具列表", `${MCP_PROTOCOL} 的 curl`, "Claude、Cursor、VS Code"],
     appName: "MCP Server 测试套件",
     checksTitle: "检查器会看什么",
-    checksIntro: "这些是对服务器已经返回的 JSON 做的静态检查，不能代替客户端自己的握手。",
+    checksIntro: "这些检查只看服务器已经返回的 JSON，不会替客户端完成握手。",
     cards: [
-      ["工具名", "字母、数字、下划线和连字符，1–64 个字符。重名是错误。"],
-      ["描述", "缺少描述只是提示。模型靠这段文字挑选工具。"],
-      ["inputSchema", "应当是一个 JSON Schema 对象。required 里的项应当出现在 properties 上。"],
-      ["initialize", "curl 先开会话，再在 tools/list 之前发送 notifications/initialized。"],
-      ["tools/call", "在检查器里点一个工具，就能按它的 schema 填一份示例参数。"],
-      ["配置形状", "Claude Desktop 和 Cursor 用 mcpServers。VS Code 用带 type 的 servers。SSE 会被标成较旧的传输。"],
+      ["工具名", "只能用字母、数字、下划线和连字符，长度 1–64。名字重复算错误。"],
+      ["描述", "缺少描述时只给提示。模型挑选工具，看的就是这段文字。"],
+      ["inputSchema", "应当是一个 JSON Schema 对象。required 里的名字，应当出现在 properties 里。"],
+      ["initialize", "这条 curl 会先建立会话，再发送 notifications/initialized，然后才是 tools/list。"],
+      ["tools/call", "在检查器里点一个工具，就会按它的 schema 填一份示例参数。"],
+      ["配置长什么样", "Claude Desktop 和 Cursor 用 mcpServers。VS Code 用带 type 的 servers。如果还在用 SSE，会被标成较旧的传输。"],
     ],
     sourcesTitle: "来源",
     faqTitle: "常见问题",
     faq: [
-      { q: "这个页面会调用我的 MCP server 吗？", a: "不会。检查器只看你粘贴的 JSON。curl 标签写出你在终端里运行的命令，那才真正到达服务器。浏览器会挡住大多数跨域 MCP 调用，本地 stdio server 也没有 HTTP 端口。" },
-      { q: "curl 里用的是哪个协议版本？", a: `initialize 发送 protocolVersion ${MCP_PROTOCOL}，MCP-Protocol-Version 头与它一致。这是当前服务器期望的 Streamable HTTP 握手。把 initialize 响应里的 mcp-session-id 抄进 MCP_SESSION_ID。如果服务器无状态、不返回这个头，后续调用就去掉 Mcp-Session-Id。` },
-      { q: "生成的配置放在哪里？", a: "Claude Desktop 把 mcpServers 写在 claude_desktop_config.json。Cursor 用同样的 mcpServers 对象，放在 ~/.cursor/mcp.json 或 .cursor/mcp.json。VS Code 在 .vscode/mcp.json 里用 servers，并带上 type stdio 或 http。以你正在用的客户端为准，不同版本的形状会变。" },
-      { q: "它和 token 计数有什么不同？", a: "这一页检查名字、输入 schema 和握手。工具结果很大时，用 MCP token 计数去对照 Claude Code 的上限。" },
+      { q: "这个页面会调用我的 MCP server 吗？", a: "不会。检查器只看你粘贴的 JSON。curl 标签生成的是命令，要你在终端里运行，请求才真正到达服务器。浏览器会拦截大多数跨域 MCP 调用；本地的 stdio server 也没有 HTTP 端口。" },
+      { q: "curl 里用的是哪个协议版本？", a: `initialize 发送 protocolVersion ${MCP_PROTOCOL}，请求头 MCP-Protocol-Version 与它一致。这是当前服务器期望的 Streamable HTTP 握手。把 initialize 响应里的 mcp-session-id 抄进 MCP_SESSION_ID。如果服务器无状态、不返回这个头，后面的调用就去掉 Mcp-Session-Id。` },
+      { q: "生成的配置放在哪里？", a: "Claude Desktop 把 mcpServers 写在 claude_desktop_config.json。Cursor 用同一个 mcpServers 对象，放在 ~/.cursor/mcp.json 或 .cursor/mcp.json。VS Code 写在 .vscode/mcp.json 的 servers 里，并带上 type，取值为 stdio 或 http。路径以你正在用的客户端为准，不同版本可能不一样。" },
+      { q: "它和 token 计数有什么不同？", a: "这一页检查名字、输入 schema 和握手。工具结果很大时，改用 MCP token 计数，对照 Claude Code 的上限。" },
     ],
     sources: [
       { label: "MCP 传输（2025-06-18）", href: REF.transports, note: "Streamable HTTP、Accept 头和 Mcp-Session-Id。" },
@@ -89,11 +89,11 @@ export function McpPage({ locale }: { locale: Locale }) {
       locale={locale}
       eyebrow={c.eyebrow}
       title={c.h1}
-      lead={<>{locale === "zh" ? "粘贴一份" : "Paste a"} <code className="font-mono text-[0.9em]">tools/list</code> {locale === "zh" ? "结果，生成 Streamable HTTP 测试脚本，或做出一份 MCP 配置。想先看白话介绍，读" : "result, generate a Streamable HTTP test script, or build an MCP config. For a plain-language intro, read"}{" "}
+      lead={<>{locale === "zh" ? "粘贴一份" : "Paste a"} <code className="font-mono text-[0.9em]">tools/list</code> {locale === "zh" ? "结果。可以生成 Streamable HTTP 测试脚本，或生成一份 MCP 配置。想先看白话说明，读" : "result, generate a Streamable HTTP test script, or build an MCP config. For a plain-language intro, read"}{" "}
         <Link className={textLink} href={localePath(locale, "/learn/mcp-server-shi-shenme/")}>{what}</Link>
-        {locale === "zh" ? "。结果太大时用" : ". Measure a result with the"}{" "}
+        {locale === "zh" ? "。结果太大时，用" : ". Measure a result with the"}{" "}
         <Link className={textLink} href={localePath(locale, "/tool-result-size/")}>{counter}</Link>
-        {locale === "zh" ? "。" : "."}
+        {locale === "zh" ? "估算。" : "."}
       </>}
       bullets={[...c.bullets]}
       tool={<McpTool />}

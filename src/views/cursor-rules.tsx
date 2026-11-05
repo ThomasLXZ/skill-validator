@@ -48,31 +48,31 @@ const copy = {
   },
   zh: {
     title: "Cursor 规则校验与 .mdc 生成",
-    description: "校验 Cursor 项目规则（.cursor/rules/*.mdc）和旧的 .cursorrules：前言、alwaysApply、globs 和描述。用表单生成一份正确的 .mdc。",
+    description: "校验 Cursor 项目规则（.cursor/rules/*.mdc）和旧的 .cursorrules，包括前言、alwaysApply、globs 和描述。也可以用表单生成一份正确的 .mdc。",
     keywords: ["cursor rules", ".mdc", "cursorrules", "cursor 规则", "alwaysApply", "cursor globs"],
     eyebrow: "Cursor 项目规则",
     h1: "校验并生成 Cursor 规则",
-    lead: "粘贴一份 .mdc 规则或旧的 .cursorrules，看 Cursor 会把它当成哪一种、哪里写错了。也可以填表，得到一份正确的规则文件。",
-    bullets: ["全部 4 种规则类型", "Glob 检查", "旧格式迁移提示"],
+    lead: "粘贴一份 .mdc 规则，或旧的 .cursorrules。先看 Cursor 会把它当成哪一种，再看哪里写错了。也可以填表，直接得到一份正确的规则文件。",
+    bullets: ["覆盖 4 种规则类型", "检查 glob 怎么写", "旧格式该怎么迁"],
     appName: "Cursor 规则校验器",
     typesTitle: "四种规则类型",
-    typesIntro: "你写的前言决定 Cursor 何时带上这条规则。下面和 Cursor 文档里的例子一致。",
+    typesIntro: "你写在前言里的字段，决定 Cursor 什么时候带上这条规则。下面四种和 Cursor 文档中的例子一致。",
     relatedTitle: "相关格式",
-    relatedIntro: "Cursor 会读项目里的 .mdc 规则，也会读根目录的 AGENTS.md。Claude Skill 是另一种 SKILL.md 格式。",
-    agentsBody: "跨工具的仓库说明。普通 Markdown，没有前言 schema。单体仓库里可以嵌套多份。",
-    mdcBody: "用 description、globs 和 alwaysApply 限定范围。不同文件需要不同规则时最合适。",
-    skillBody: "给 Claude 用的可复用流程，前言里必须有 name 和 description。",
+    relatedIntro: "Cursor 会读项目里的 .mdc，也会读根目录的 AGENTS.md。Claude Skill 则是另一种文件：SKILL.md。",
+    agentsBody: "这是给多种工具共用的仓库说明，格式是普通 Markdown，没有前言 schema。单体仓库里可以按目录再放一份。",
+    mdcBody: "用 description、globs 和 alwaysApply 决定何时生效。不同文件需要不同规则时，用这种格式最合适。",
+    skillBody: "给 Claude 用的可复用流程。前言里必须有 name 和 description。",
     sourcesTitle: "来源",
     faqTitle: "常见问题",
     faq: [
       { q: ".cursorrules 还能用吗？", a: "Cursor 帮助中心把根目录的 .cursorrules 称为旧格式，并说它将被弃用。把内容挪到 .cursor/rules/，写成一份或多份 .mdc。" },
-      { q: "一条 Cursor 规则有哪些前文字段？", a: "三个：description、globs 和 alwaysApply。你设置哪几个，决定规则类型：始终应用、智能应用、匹配文件时应用，或手动应用。" },
-      { q: "为什么 glob 匹配不到子目录里的文件？", a: "*.ts 这样的模式只匹配根目录。要用 **/*.ts 才能匹配每一层。多个 glob 用逗号分开。" },
-      { q: "一条规则应该多长？", a: "Cursor 建议规则少于 500 行，太长就拆开。用 @path 引用文件，而不是把内容贴进来。" },
+      { q: "一条 Cursor 规则有哪些前文字段？", a: "三个：description、globs 和 alwaysApply。你填了哪几个，就决定了规则类型：始终应用、智能应用、匹配文件时应用，或手动应用。" },
+      { q: "为什么 glob 匹配不到子目录里的文件？", a: "*.ts 这种写法只匹配根目录。要匹配每一层目录，写成 **/*.ts。多个 glob 用逗号分开。" },
+      { q: "一条规则应该多长？", a: "Cursor 建议一条规则少于 500 行。太长就拆开。需要提到别的文件时，用 @path 引用，不要把内容贴进来。" },
     ],
     sources: [
       { label: "Cursor 文档：Rules", href: REF.rules, note: "规则类型、前言、globs、500 行建议，以及旧的 .cursorrules。" },
-      { label: "Cursor 帮助：Rules", href: REF.help, note: "Glob 语法，以及规则如何被应用。" },
+      { label: "Cursor 帮助：Rules", href: REF.help, note: "Glob 怎么写，以及规则在什么时候被用上。" },
     ],
   },
 } as const;
@@ -90,7 +90,7 @@ export function CursorRulesPage({ locale }: { locale: Locale }) {
       locale={locale}
       eyebrow={c.eyebrow}
       title={c.h1}
-      lead={<>{locale === "zh" ? "粘贴一份" : "Paste a"} <code className="font-mono text-[0.9em]">.mdc</code> {locale === "zh" ? "规则或旧的" : "rule or an old"} <code className="font-mono text-[0.9em]">.cursorrules</code> {locale === "zh" ? "文件，看 Cursor 会把它当成哪一种、哪里写错了。也可以填表，得到一份正确的规则文件。" : "file to see which type Cursor will treat it as and what's wrong. Or fill in a form and get a correct rule file."}</>}
+      lead={<>{locale === "zh" ? "粘贴一份" : "Paste a"} <code className="font-mono text-[0.9em]">.mdc</code> {locale === "zh" ? "规则，或旧的" : "rule or an old"} <code className="font-mono text-[0.9em]">.cursorrules</code> {locale === "zh" ? "。先看 Cursor 会把它当成哪一种，再看哪里写错了。也可以填表，直接得到一份正确的规则文件。" : "file to see which type Cursor will treat it as and what's wrong. Or fill in a form and get a correct rule file."}</>}
       bullets={[...c.bullets]}
       tool={<CursorRulesTool />}
       jsonLd={{ "@context": "https://schema.org", "@graph": [
