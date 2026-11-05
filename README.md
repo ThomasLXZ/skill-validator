@@ -19,6 +19,36 @@ npm run screenshot     # Playwright screenshots -> screenshots/after-*.png (PREF
 ```
 
 Set `NEXT_PUBLIC_SITE_URL` at build time for canonical, sitemap, and robots URLs.
+`.env.production` commits the workers.dev default. A shell or Cloudflare build variable with the same name overrides it.
+
+## Deploy (Cloudflare Workers)
+
+This app is a static export (`output: "export"` writes `out/`). It does not produce `.next/standalone`, so Wrangler must not auto-configure Next.js. Without a Wrangler config, `npx wrangler deploy` detects Next.js 15 and runs `@opennextjs/cloudflare migrate`, then `opennextjs-cloudflare build` fails looking for `.next/standalone/.next/server/pages-manifest.json`.
+
+`wrangler.jsonc` publishes `./out` as [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/). A committed config is treated as already configured, so that OpenNext migrate does not run. `html_handling` is `auto-trailing-slash` to match `trailingSlash: true` (`/route` redirects to `/route/`, which serves `route/index.html`). `not_found_handling` is `404-page` so unknown paths return the exported `404.html` with status 404.
+
+Workers Builds (Git), project `skill-validator`:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Root directory | repository root |
+| Output directory | leave unset (Wrangler uploads `out/` from `assets.directory`) |
+
+Build-time variable (canonical, sitemap, robots). Not a Worker runtime var. Default in `.env.production`:
+
+```
+NEXT_PUBLIC_SITE_URL=https://skill-validator.zxl970212.workers.dev
+```
+
+Override that in the Workers Builds environment variables if the public URL changes. Install must include devDependencies so the pinned `wrangler` is used (`npx wrangler` then prefers the local binary).
+
+```bash
+npm run build     # static export -> out/
+npm run preview   # wrangler dev, serves out/
+npm run deploy    # wrangler deploy (needs Cloudflare auth)
+```
 
 ## Checks (rule ids)
 

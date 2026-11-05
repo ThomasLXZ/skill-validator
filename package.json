@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npx serve out -l 3000",
+    "preview": "wrangler dev",
+    "deploy": "wrangler deploy",
     "test": "vitest run",
     "screenshot": "node scripts/screenshot.mjs"
   },
@@ -36,6 +38,7 @@
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.12"
+    "vitest": "^4.1.12",
+    "wrangler": "^4.157.0"
   }
 }

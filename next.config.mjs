@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export", // fully static: deploy to Cloudflare Pages / any CDN
+  output: "export", // fully static: Workers Static Assets from ./out (see wrangler.jsonc)
   trailingSlash: true,
   images: { unoptimized: true },
 };

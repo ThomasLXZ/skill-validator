@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Matches https://skill-validator.zxl970212.workers.dev
+  "name": "skill-validator",
+  // Assets-only static export. A committed Wrangler config skips Next.js
+  // auto-configuration (OpenNext migrate / vinext). Do not add `main` or an
+  // OpenNext assets directory — `output: "export"` does not emit standalone.
+  "compatibility_date": "2026-11-05",
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  },
+  "assets": {
+    "directory": "./out",
+    // Next `trailingSlash: true` emits folder/index.html. This redirects
+    // /route -> /route/ and serves that index. See Workers HTML handling.
+    "html_handling": "auto-trailing-slash",
+    // Unknown URLs serve the nearest 404.html with status 404.
+    "not_found_handling": "404-page"
+  }
+}
