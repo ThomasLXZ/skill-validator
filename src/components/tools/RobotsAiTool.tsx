@@ -9,6 +9,8 @@ import { AIPREF_LABELS, type AiprefLabel, type Pref } from "@/lib/robots-ai/aipr
 import { defaultOptions, generateRobots, presetAccess, type Access, type GeneratorOptions, type Preset } from "@/lib/robots-ai/generate";
 import { checkLlmsTxt } from "@/lib/robots-ai/llms";
 import { SRC } from "@/lib/robots-ai/sources";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import {
   CopyButtons, Editor, Field, FindingsList, GhostButton, inputCls, LocalNote, PaneHeader, SectionTitle, Segmented,
   SeverityCounts, Stat, Tabs, toDiagnostics, ToolCard, Toolbar, type CodeEditorHandle,
@@ -77,6 +79,8 @@ const PREF: Record<Pref, { label: string; cls: string }> = {
 };
 
 export default function RobotsAiTool() {
+  const copy = chrome(useLocale());
+  const labels = copy.robots;
   const [tab, setTab] = useState<Tab>("check");
   const [text, setText] = useState(EX_TYPICAL);
   const [llms, setLlms] = useState(EX_LLMS);
@@ -98,13 +102,13 @@ export default function RobotsAiTool() {
           value={tab}
           onChange={setTab}
           tabs={[
-            { id: "check", label: "Check robots.txt", Icon: Bot },
-            { id: "generate", label: "Generate", Icon: Wand2 },
-            { id: "llms", label: "llms.txt", Icon: ScrollText },
+            { id: "check", label: labels.check, Icon: Bot },
+            { id: "generate", label: labels.generate, Icon: Wand2 },
+            { id: "llms", label: labels.llms, Icon: ScrollText },
           ]}
         />
         <span className="hidden text-[12.5px] text-muted-foreground md:block">
-          {AI_CRAWLERS.length} AI user agents · RFC 9309 matching · IETF aipref drafts
+          {labels.summary(AI_CRAWLERS.length)}
         </span>
       </Toolbar>
 
@@ -112,9 +116,9 @@ export default function RobotsAiTool() {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
           <div className="flex min-h-[420px] flex-col border-b lg:h-[720px] lg:border-b-0 lg:border-r">
             <PaneHeader icon={<FileText className="size-3.5 text-muted-foreground" aria-hidden />} title="robots.txt">
-              <GhostButton onClick={() => setText(EX_TYPICAL)}>Example</GhostButton>
-              <GhostButton onClick={() => setText(EX_DRAFTS)}>Draft signals</GhostButton>
-              <GhostButton onClick={() => setText("")}>Clear</GhostButton>
+              <GhostButton onClick={() => setText(EX_TYPICAL)}>{labels.example}</GhostButton>
+              <GhostButton onClick={() => setText(EX_DRAFTS)}>{labels.drafts}</GhostButton>
+              <GhostButton onClick={() => setText("")}>{copy.clear}</GhostButton>
             </PaneHeader>
             <div className="h-[420px] min-h-0 flex-1 lg:h-auto">
               <Editor ref={editor} language="plain" value={text} onChange={setText} diagnostics={diags} ariaLabel="robots.txt content" placeholderText={"Paste your robots.txt here\n\nUser-agent: GPTBot\nDisallow: /"} />
@@ -149,8 +153,8 @@ export default function RobotsAiTool() {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
           <div className="flex min-h-[420px] flex-col border-b lg:h-[620px] lg:border-b-0 lg:border-r">
             <PaneHeader icon={<FileText className="size-3.5 text-muted-foreground" aria-hidden />} title="llms.txt">
-              <GhostButton onClick={() => setLlms(EX_LLMS)}>Example</GhostButton>
-              <GhostButton onClick={() => setLlms("")}>Clear</GhostButton>
+              <GhostButton onClick={() => setLlms(EX_LLMS)}>{labels.example}</GhostButton>
+              <GhostButton onClick={() => setLlms("")}>{copy.clear}</GhostButton>
             </PaneHeader>
             <div className="h-[420px] min-h-0 flex-1 lg:h-auto">
               <Editor ref={llmsEditor} value={llms} onChange={setLlms} diagnostics={llmsDiags} ariaLabel="llms.txt content" placeholderText={"# Project name\n\n> One-line summary\n\n## Docs\n\n- [Quick start](https://example.com/start.md): notes"} />
@@ -194,6 +198,7 @@ function EmptyState({ title, text }: { title: string; text: string }) {
 }
 
 function RobotsReportView({ report, onJump }: { report: ReturnType<typeof checkRobots>; onJump(l: number): void }) {
+  const labels = chrome(useLocale()).robots;
   const current = report.crawlers.filter((c) => !c.crawler.legacy);
   const n = (p: CrawlerPurpose, s: AccessStatus) => current.filter((c) => c.crawler.purpose === p && c.status === s).length;
   const tot = (p: CrawlerPurpose) => current.filter((c) => c.crawler.purpose === p).length;
@@ -201,10 +206,10 @@ function RobotsReportView({ report, onJump }: { report: ReturnType<typeof checkR
   return (
     <div className="robots-report">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Stat label="Training bots blocked" value={`${n("training", "blocked")}/${tot("training")}`} sub={n("training", "partial") ? `${n("training", "partial")} partial` : undefined} />
-        <Stat label="AI search bots allowed" value={`${n("search", "allowed")}/${tot("search")}`} />
-        <Stat label="Content-Usage rules" value={report.contentUsage.length} sub="IETF draft" />
-        <Stat label="__usage_ai-training" value={pt.present ? (pt.root === "against" ? "Against" : "In favor") : "None"} sub={pt.present ? `AI training at / · ${pt.exceptions.length} exception${pt.exceptions.length === 1 ? "" : "s"}` : "Shared token draft"} tone={pt.present ? (pt.root === "against" ? "ok" : "warning") : undefined} />
+        <Stat label={labels.training} value={`${n("training", "blocked")}/${tot("training")}`} sub={n("training", "partial") ? labels.partial(n("training", "partial")) : undefined} />
+        <Stat label={labels.search} value={`${n("search", "allowed")}/${tot("search")}`} />
+        <Stat label={labels.usageRules} value={report.contentUsage.length} sub={labels.ietf} />
+        <Stat label={labels.token} value={pt.present ? (pt.root === "against" ? labels.against : labels.inFavor) : labels.none} sub={pt.present ? labels.exceptions(pt.exceptions.length) : labels.shared} tone={pt.present ? (pt.root === "against" ? "ok" : "warning") : undefined} />
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-3">

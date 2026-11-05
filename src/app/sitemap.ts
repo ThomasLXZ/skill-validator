@@ -1,22 +1,23 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/site";
+import { LOCALES, ROUTES, localePath } from "@/lib/i18n/routing";
 
 export const dynamic = "force-static";
 
-const ROUTES: { path: string; priority: number; changeFrequency: "weekly" | "monthly" }[] = [
-  { path: "/", priority: 1, changeFrequency: "weekly" },
-  { path: "/agents-md/", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/json-schema/", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/mcp/", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/text-watermark/", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/robots-ai/", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/tool-result-size/", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/cursor-rules/", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/learn/mcp-tool-vs-resource-vs-prompt/", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/learn/mcp-server-shi-shenme/", priority: 0.7, changeFrequency: "monthly" },
-];
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date("2026-11-05");
-  return ROUTES.map((r) => ({ url: `${SITE}${r.path}`, lastModified, changeFrequency: r.changeFrequency, priority: r.priority }));
+  return ROUTES.flatMap((r) => {
+    const languages = {
+      en: `${SITE}${localePath("en", r.path)}`,
+      "zh-Hans": `${SITE}${localePath("zh", r.path)}`,
+      "x-default": `${SITE}${localePath("en", r.path)}`,
+    };
+    return LOCALES.map((locale) => ({
+      url: `${SITE}${localePath(locale, r.path)}`,
+      lastModified,
+      changeFrequency: r.changeFrequency,
+      priority: locale === "en" ? r.priority : Math.round(r.priority * 0.9 * 10) / 10,
+      alternates: { languages },
+    }));
+  });
 }

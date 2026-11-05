@@ -4,6 +4,8 @@ import { useMemo, useRef, useState } from "react";
 import { Braces, FileText } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { analyzeToolResult, LIMITS, REF } from "@/lib/tool-result-size";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import { Editor, FindingsList, GhostButton, LocalNote, PaneHeader, SectionTitle, SeverityCounts, Stat, Toolbar, toDiagnostics, ToolCard, type CodeEditorHandle } from "./ui";
 
 function bigJson(): string {
@@ -23,6 +25,7 @@ const EXAMPLES = {
 const fmt = (n: number) => n.toLocaleString("en-US");
 
 export default function ToolResultSizeTool() {
+  const labels = chrome(useLocale());
   const [text, setText] = useState(EXAMPLES.mcp.text);
   const [isError, setIsError] = useState(false);
   const editor = useRef<CodeEditorHandle>(null);
@@ -45,8 +48,8 @@ export default function ToolResultSizeTool() {
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
         <div className="flex min-h-[420px] flex-col border-b lg:h-[700px] lg:border-b-0 lg:border-r">
           <PaneHeader icon={<FileText className="size-3.5 text-muted-foreground" aria-hidden />} title="Tool result">
-            {Object.values(EXAMPLES).map((e) => <GhostButton key={e.label} onClick={() => setText(e.text())}>{e.label}</GhostButton>)}
-            <GhostButton onClick={() => setText("")}>Clear</GhostButton>
+            {(Object.keys(EXAMPLES) as Array<keyof typeof EXAMPLES>).map((id) => <GhostButton key={id} onClick={() => setText(EXAMPLES[id].text())}>{labels.tokens[id === "text" ? "plain" : id]}</GhostButton>)}
+            <GhostButton onClick={() => setText("")}>{labels.clear}</GhostButton>
           </PaneHeader>
           <div className="h-[420px] min-h-0 flex-1 lg:h-auto">
             <Editor ref={editor} language="plain" value={text} onChange={setText} diagnostics={diags} ariaLabel="Tool result" placeholderText="Paste the output your tool returns" />

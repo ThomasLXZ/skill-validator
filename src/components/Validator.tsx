@@ -11,6 +11,8 @@ import {
   type Issue, type Report, type Severity, type SkillBundle, type Target,
 } from "@/lib/validator";
 import { cn } from "@/lib/cn";
+import { chrome, sevCount } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import type { CodeEditorHandle, LineDiagnostic } from "./CodeEditor";
 import { EXAMPLES } from "./examples";
 
@@ -27,13 +29,16 @@ const SEV: Record<Severity, { label: string; text: string; soft: string; border:
   tip: { label: "Tips", text: "text-tip", soft: "bg-tip-soft", border: "border-tip/30", Icon: Info },
 };
 
-const TABS: Array<{ id: Tab; label: string; Icon: typeof FileText }> = [
-  { id: "paste", label: "Paste SKILL.md", Icon: ClipboardPaste },
-  { id: "zip", label: "Upload .zip", Icon: FileArchive },
-  { id: "folder", label: "Upload folder", Icon: FolderOpen },
-];
+const TAB_ICONS: Record<Tab, typeof FileText> = {
+  paste: ClipboardPaste,
+  zip: FileArchive,
+  folder: FolderOpen,
+};
 
 export default function Validator() {
+  const locale = useLocale();
+  const copy = chrome(locale);
+  const v = copy.validator;
   const [tab, setTab] = useState<Tab>("paste");
   const [text, setText] = useState(EXAMPLES.bad.text);
   const [target, setTarget] = useState<Target>("portable");
@@ -67,9 +72,9 @@ export default function Validator() {
       setSourceLabel(file.name);
     } catch (e) {
       setBundle(null);
-      setLoadError(`Could not read ${file.name} as a zip: ${(e as Error).message}`);
+      setLoadError(v.zipError(file.name, (e as Error).message));
     } finally { setBusy(false); }
-  }, []);
+  }, [v]);
 
   const onFolder = useCallback(async (files: FileList | null) => {
     if (!files?.length) return;
@@ -91,8 +96,10 @@ export default function Validator() {
     <div id="validator" className="tool overflow-hidden rounded-2xl border bg-background shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_40px_-12px_rgb(0_0_0/0.12)] dark:shadow-[0_0_0_1px_rgb(255_255_255/0.02),0_20px_60px_-20px_rgb(0_0_0/0.8)]">
       {/* toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-subtle px-3 py-2.5 sm:px-4">
-        <div role="tablist" aria-label="Input method" className="inline-flex rounded-lg border bg-background p-0.5">
-          {TABS.map(({ id, label, Icon }) => (
+        <div role="tablist" aria-label={v.inputMethod} className="inline-flex rounded-lg border bg-background p-0.5">
+          {(["paste", "zip", "folder"] as Tab[]).map((id) => {
+            const Icon = TAB_ICONS[id];
+            return (
             <button
               key={id}
               role="tab"
@@ -104,19 +111,21 @@ export default function Validator() {
               )}
             >
               <Icon className="size-3.5" aria-hidden />
-              <span className={cn(id !== tab && "hidden sm:inline")}>{label}</span>
+              <span className={cn(id !== tab && "hidden sm:inline")}>{v.tabs[id]}</span>
             </button>
-          ))}
+            );
+          })}
         </div>
         <label className="relative inline-flex items-center gap-2 text-[13px] text-muted-foreground">
-          <span className="hidden sm:inline">Validate for</span>
+          <span className="hidden sm:inline">{v.validateFor}</span>
           <select
             value={target}
             onChange={(e) => setTarget(e.target.value as Target)}
+            aria-label={v.validateFor}
             className="h-8 appearance-none rounded-md border bg-background py-0 pl-2.5 pr-8 text-[13px] font-medium text-foreground hover:bg-muted"
           >
-            <option value="portable">claude.ai, API &amp; Agent Skills spec</option>
-            <option value="claude-code">Claude Code</option>
+            <option value="portable">{v.targetPortable}</option>
+            <option value="claude-code">{v.targetClaudeCode}</option>
           </select>
           <ChevronDown className="pointer-events-none absolute right-2 size-3.5" aria-hidden />
         </label>
@@ -133,9 +142,9 @@ export default function Validator() {
                   SKILL.md
                 </div>
                 <div className="examples flex items-center gap-1">
-                  <GhostButton onClick={() => setText(EXAMPLES.good.text)}><Short label={EXAMPLES.good.label} /></GhostButton>
-                  <GhostButton onClick={() => setText(EXAMPLES.bad.text)}><Short label={EXAMPLES.bad.label} /></GhostButton>
-                  <GhostButton onClick={() => setText("")}>Clear</GhostButton>
+                  <GhostButton onClick={() => setText(EXAMPLES.good.text)}><Short label={v.goodExample} /></GhostButton>
+                  <GhostButton onClick={() => setText(EXAMPLES.bad.text)}><Short label={v.brokenExample} /></GhostButton>
+                  <GhostButton onClick={() => setText("")}>{copy.clear}</GhostButton>
                 </div>
               </div>
               <div className="h-[420px] min-h-0 flex-1 lg:h-auto">
@@ -144,7 +153,7 @@ export default function Validator() {
                   value={text}
                   onChange={setText}
                   diagnostics={diagnostics}
-                  ariaLabel="SKILL.md content"
+                  ariaLabel={v.ariaLabel}
                   placeholderText={"---\nname: my-skill\ndescription: What it does. Use when ...\n---\n\n# Instructions"}
                 />
               </div>
@@ -185,17 +194,15 @@ export default function Validator() {
                 </div>
                 <div>
                   <p className="text-[15px] font-medium">
-                    {tab === "zip" ? "Drop a skill .zip here" : "Choose your skill folder"}
+                    {tab === "zip" ? v.dropZip : v.chooseFolder}
                   </p>
                   <p className="mt-1 text-[13px] text-muted-foreground">
-                    {tab === "zip"
-                      ? "Or click to browse. The archive is unpacked in your browser."
-                      : "Pick the folder that contains SKILL.md. Files are read in your browser."}
+                    {tab === "zip" ? v.dropZipHint : v.chooseFolderHint}
                   </p>
                 </div>
               </div>
               {loadError && <p className="err rounded-lg border border-error/30 bg-error-soft px-3 py-2 text-[13px] text-error">{loadError}</p>}
-              {bundle && <FileList bundle={bundle} label={sourceLabel} />}
+              {bundle && <FileList bundle={bundle} label={sourceLabel} locale={locale} />}
             </div>
           )}
         </div>
@@ -207,9 +214,9 @@ export default function Validator() {
           ) : (
             <div className="grid h-full min-h-[320px] place-items-center p-8 text-center">
               <div>
-                <p className="text-[15px] font-medium">No skill loaded yet</p>
+                <p className="text-[15px] font-medium">{v.noSkill}</p>
                 <p className="mt-1 text-[13px] text-muted-foreground">
-                  {tab === "zip" ? "Drop a .zip on the left to get a score and fixes." : "Choose a folder on the left to get a score and fixes."}
+                  {tab === "zip" ? v.noSkillZip : v.noSkillFolder}
                 </p>
               </div>
             </div>
@@ -219,7 +226,7 @@ export default function Validator() {
 
       <div className="flex items-center gap-2 border-t bg-subtle px-4 py-2 text-[12px] text-muted-foreground">
         <Lock className="size-3" aria-hidden />
-        Checked locally. Your files are never uploaded.
+        {copy.localNote}
       </div>
     </div>
   );
@@ -239,13 +246,15 @@ function Short({ label }: { label: string }) {
   return <>{head}{rest.length ? <span className="hidden sm:inline"> {rest.join(" ")}</span> : null}</>;
 }
 
-function FileList({ bundle, label }: { bundle: SkillBundle; label: string }) {
+function FileList({ bundle, label, locale }: { bundle: SkillBundle; label: string; locale: ReturnType<typeof useLocale> }) {
   const paths = [...bundle.files.keys()].sort();
+  const v = chrome(locale).validator;
+  const unit = paths.length === 1 ? v.file : v.files;
   return (
     <div className="rounded-xl border">
       <div className="flex items-center justify-between border-b px-3 py-2 text-[13px]">
         <span className="font-medium">{label || bundle.rootDir || "Skill"}</span>
-        <span className="text-muted-foreground">{paths.length} {paths.length === 1 ? "file" : "files"}</span>
+        <span className="text-muted-foreground">{paths.length} {unit}</span>
       </div>
       <ul className="max-h-48 overflow-y-auto py-1 font-mono text-[12px]">
         {paths.map((p) => (
@@ -278,7 +287,7 @@ function ScoreRing({ score, grade }: { score: number; grade: Report["grade"] }) 
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="num text-[30px] font-semibold leading-none tracking-tight tabular-nums">{score}</span>
-        <span className="mt-1 text-[11px] text-muted-foreground">of 100</span>
+        <span className="mt-1 text-[11px] text-muted-foreground">{chrome(useLocale()).validator.of100}</span>
       </div>
     </div>
   );
@@ -305,13 +314,16 @@ function Meter({ label, value, max, unit }: { label: string; value: number; max?
 }
 
 function ReportView({ report, onJump, canJump }: { report: Report; onJump(i: Issue): void; canJump: boolean }) {
+  const locale = useLocale();
+  const copy = chrome(locale);
+  const v = copy.validator;
   const groups: Severity[] = ["error", "warning", "tip"];
-  const verdict = report.passed ? (report.counts.warning ? "Valid, with warnings" : "Valid skill") : "Invalid skill";
+  const verdict = report.passed ? (report.counts.warning ? v.verdictWarnings : v.verdictValid) : v.verdictInvalid;
   const summary = report.passed
     ? report.counts.warning
-      ? "Claude will accept this skill. Fix the warnings so it triggers reliably."
-      : "Ready to upload. Nothing blocks this skill."
-    : `Fix ${report.counts.error === 1 ? "the error" : `the ${report.counts.error} errors`} below before uploading. Uploads with these problems are rejected or never trigger.`;
+      ? v.summaryWarnings
+      : v.summaryValid
+    : v.summaryInvalid(report.counts.error);
   return (
     <div className="p-4 sm:p-5">
       <div className="scorecard flex items-center gap-5">
@@ -323,7 +335,7 @@ function ReportView({ report, onJump, canJump }: { report: Report; onJump(i: Iss
               className="rounded-md px-1.5 py-0.5 text-[12px] font-semibold"
               style={{ color: GRADE_COLOR[report.grade], background: `color-mix(in oklab, ${GRADE_COLOR[report.grade]} 14%, transparent)` }}
             >
-              Grade {report.grade}
+              {v.grade(report.grade)}
             </span>
           </div>
           <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{summary}</p>
@@ -334,7 +346,7 @@ function ReportView({ report, onJump, canJump }: { report: Report; onJump(i: Iss
               return (
                 <span key={g} className={cn("b inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium", g, n ? [text, soft] : "bg-muted text-muted-foreground")}>
                   <Icon className="size-3" aria-hidden />
-                  {n} {n === 1 ? SEV[g].label.slice(0, -1).toLowerCase() : SEV[g].label.toLowerCase()}
+                  {sevCount(locale, g, n)}
                 </span>
               );
             })}
@@ -343,27 +355,28 @@ function ReportView({ report, onJump, canJump }: { report: Report; onJump(i: Iss
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Meter label="Description" value={report.stats.descriptionChars} max={1024} />
-        <Meter label="Body lines" value={report.stats.bodyLines} max={500} />
-        <Meter label="Body tokens" value={report.stats.approxBodyTokens} max={5000} />
-        <Meter label="Files" value={report.stats.fileCount} />
+        <Meter label={v.description} value={report.stats.descriptionChars} max={1024} />
+        <Meter label={v.bodyLines} value={report.stats.bodyLines} max={500} />
+        <Meter label={v.bodyTokens} value={report.stats.approxBodyTokens} max={5000} />
+        <Meter label={v.filesLabel} value={report.stats.fileCount} />
       </div>
 
       {report.issues.length === 0 && (
         <div className="ok mt-5 flex items-center gap-3 rounded-xl border border-ok/30 bg-ok-soft px-4 py-3 text-[14px] text-ok">
           <CheckCircle2 className="size-4" aria-hidden />
-          No issues found. This skill follows every rule we check.
+          {v.noIssuesLong}
         </div>
       )}
 
       {groups.map((g) => {
         const items = report.issues.filter((i) => i.severity === g);
         if (!items.length) return null;
-        const { label, text } = SEV[g];
+        const { text } = SEV[g];
+        const heading = copy.sev[g].title;
         return (
           <section key={g} className="group mt-6">
             <h3 className="mb-2 flex items-center gap-2 text-[13px] font-medium">
-              <span className={text}>{label}</span>
+              <span className={text}>{heading}</span>
               <span className="rounded-full bg-muted px-1.5 text-[11px] tabular-nums text-muted-foreground">{items.length}</span>
             </h3>
             <ul className="flex flex-col gap-2">
@@ -377,6 +390,7 @@ function ReportView({ report, onJump, canJump }: { report: Report; onJump(i: Iss
 }
 
 function IssueItem({ issue, onJump, canJump }: { issue: Issue; onJump(i: Issue): void; canJump: boolean }) {
+  const copy = chrome(useLocale());
   const { text, Icon } = SEV[issue.severity];
   const loc = issue.file ? `${issue.file}${issue.line ? `:${issue.line}` : ""}` : "";
   const jumpable = canJump && !!issue.line && (!issue.file || issue.file === "SKILL.md");
@@ -389,19 +403,19 @@ function IssueItem({ issue, onJump, canJump }: { issue: Issue; onJump(i: Issue):
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
             <code className="rule font-mono text-[11.5px]">{issue.rule}</code>
             {loc && (jumpable ? (
-              <button onClick={() => onJump(issue)} className="loc font-mono text-[11.5px] underline decoration-dotted underline-offset-2 hover:text-foreground" title="Show in editor">
+              <button onClick={() => onJump(issue)} className="loc font-mono text-[11.5px] underline decoration-dotted underline-offset-2 hover:text-foreground" title={copy.showInEditor}>
                 {loc}
               </button>
             ) : <span className="loc font-mono text-[11.5px]">{loc}</span>)}
             {issue.ref && (
               <a className="ref ml-auto inline-flex items-center gap-0.5 hover:text-foreground" href={issue.ref} target="_blank" rel="noopener noreferrer">
-                Spec<ArrowUpRight className="size-3" aria-hidden />
+                {copy.spec}<ArrowUpRight className="size-3" aria-hidden />
               </a>
             )}
           </div>
           {issue.fix && (
             <div className="fix mt-2.5 rounded-lg bg-subtle px-3 py-2 text-[12.5px] leading-relaxed ring-1 ring-border ring-inset">
-              <span className="font-medium">Fix: </span>
+              <span className="font-medium">{copy.fix} </span>
               <span className="whitespace-pre-wrap text-muted-foreground">{issue.fix}</span>
             </div>
           )}

@@ -3,6 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import { Braces, FlaskConical, ShieldCheck } from "lucide-react";
 import { checkInstance, checkSchema, checkStructuredOutput } from "@/lib/json-schema";
+import { chrome } from "@/lib/i18n/chrome";
+import { useLocale } from "@/lib/i18n/context";
 import {
   CopyButtons, Editor, FindingsList, GhostButton, LocalNote, PaneHeader, SectionTitle, SeverityCounts, Stat,
   Tabs, toDiagnostics, ToolCard, Toolbar, type CodeEditorHandle,
@@ -54,6 +56,7 @@ const INSTANCE_BAD = `{
 }`;
 
 export default function SchemaTool() {
+  const labels = chrome(useLocale()).schema;
   const [tab, setTab] = useState<Tab>("schema");
   const [schema, setSchema] = useState(DRAFT7);
   const [instance, setInstance] = useState(INSTANCE_BAD);
@@ -72,9 +75,9 @@ export default function SchemaTool() {
           value={tab}
           onChange={setTab}
           tabs={[
-            { id: "schema", label: "Schema", Icon: Braces },
-            { id: "instance", label: "Playground", Icon: FlaskConical },
-            { id: "openai", label: "OpenAI strict", Icon: ShieldCheck },
+            { id: "schema", label: labels.schema, Icon: Braces },
+            { id: "instance", label: labels.playground, Icon: FlaskConical },
+            { id: "openai", label: labels.openai, Icon: ShieldCheck },
           ]}
         />
         <span className="hidden text-[12.5px] text-muted-foreground md:block">Draft-07 keyword checks, then strict structured output</span>

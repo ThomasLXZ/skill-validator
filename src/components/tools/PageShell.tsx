@@ -1,16 +1,18 @@
 import { Check } from "lucide-react";
 import SiteHeader from "../SiteHeader";
 import SiteFooter from "../SiteFooter";
+import { I18nProvider } from "@/lib/i18n/context";
+import type { Locale } from "@/lib/i18n/routing";
 
 /** Hero + tool + content sections, shared by every tool page. */
-export function ToolPage({ eyebrow, title, lead, bullets, tool, children, jsonLd }: {
-  eyebrow: string; title: string; lead: React.ReactNode; bullets: string[]; tool: React.ReactNode; children?: React.ReactNode; jsonLd?: object;
+export function ToolPage({ locale = "en", eyebrow, title, lead, bullets, tool, children, jsonLd }: {
+  locale?: Locale; eyebrow: string; title: string; lead: React.ReactNode; bullets: string[]; tool: React.ReactNode; children?: React.ReactNode; jsonLd?: object;
 }) {
   return (
-    <>
+    <I18nProvider locale={locale}>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
       <SiteHeader />
-      <main>
+      <main lang={locale === "zh" ? "zh-Hans" : "en"}>
         <section className="hero relative">
           <div className="hero-grid pointer-events-none absolute inset-x-0 top-0 h-[420px]" aria-hidden />
           <div className="relative mx-auto max-w-[1240px] px-4 pb-8 pt-12 sm:px-6 sm:pt-16">
@@ -32,8 +34,8 @@ export function ToolPage({ eyebrow, title, lead, bullets, tool, children, jsonLd
         </section>
         {children}
       </main>
-      <SiteFooter />
-    </>
+      <SiteFooter locale={locale} />
+    </I18nProvider>
   );
 }
 
